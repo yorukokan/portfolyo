@@ -3,165 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Kişisel portfolyo sitesi">
-  <title>Portfolyo</title>
+  <meta name="description" content="Okan Yörük — Software & Systems Engineer. Türksat A.Ş. Sistem ve Ağ Yönetimi, Finansal Dağıtım Motorları, Yapay Görme ve Çapraz Platform Yazılım Mimarisi.">
+  <title>Okan Yörük | Software &amp; Systems Engineer</title>
 
-  <!-- Three.js (jsDelivr, ES modülü) -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-      }
-    }
-  </script>
-
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
-  <noscript>
-    <style>
-      .preloader {
-        display: none !important;
-      }
-    </style>
-  </noscript>
 </head>
 <body>
 
-  <div class="preloader" data-preloader aria-hidden="true">
-    <div class="preloader__inner">
-      <span class="preloader__count" data-preloader-count>0</span>
-      <div class="preloader__bar" aria-hidden="true">
-        <span class="preloader__bar-fill" data-preloader-bar></span>
-      </div>
-      <span class="preloader__label">Yükleniyor</span>
-    </div>
+  <!-- Tam Ekran Partikül Sahnesi (Sabit Arka Plan) -->
+  <div class="webgl-stage" id="webgl-stage" aria-hidden="true">
+    <canvas id="particle-canvas"></canvas>
   </div>
 
-  <header class="header">
-    <nav class="nav" aria-label="Ana menü">
-      <a class="nav__logo" href="#hakkimda">Portfolyo</a>
-      <ul class="nav__list">
-        <li><a href="#hakkimda">Hakkımda</a></li>
-        <li><a href="#yetenekler">Yetenekler</a></li>
-        <li><a href="#projeler">Projeler</a></li>
-        <li><a href="#iletisim">İletişim</a></li>
-      </ul>
-    </nav>
-  </header>
+  <!-- Özel İmleç: Parlayan Beyaz Nokta + Hover'da İnce Çember (Ekran Görüntüsü 4..23) -->
+  <div class="custom-cursor" data-cursor aria-hidden="true">
+    <div class="custom-cursor__dot"></div>
+    <div class="custom-cursor__ring"></div>
+  </div>
 
-  <section id="hero" class="hero" aria-label="Giriş">
-    <div class="hero__scene" data-hero-scene aria-hidden="true"></div>
-    <h1 class="hero__title" data-hero-title aria-label="Yazılım Geliştirici">
-      <span class="hero__line">Yazılım</span>
-      <span class="hero__line">Geliştirici</span>
-    </h1>
-  </section>
+  <!-- ======================================================================
+       KAYDIRMA GÜDÜMLÜ SAHNE KATMANLARI (Ekran Görüntüsü 4 -> 23)
+       ====================================================================== -->
+  <main class="scroll-container" id="scroll-container">
 
-  <main>
-
-    <section id="hakkimda" class="section">
-      <h2>Hakkımda</h2>
-      <p>
-        Merhaba! Ben bir yazılım geliştiricisiyim. Web teknolojileriyle kullanıcı
-        dostu arayüzler ve ölçeklenebilir uygulamalar geliştiriyorum.
-      </p>
-      <p>
-        Öğrenmeyi, yeni teknolojileri keşfetmeyi ve problem çözmeyi seviyorum.
-        Boş zamanlarımda açık kaynak projelere katkıda bulunuyor ve küçük deneyler
-        yazıyorum.
-      </p>
-      <a class="button" href="#projeler">Projelerimi Gör</a>
+    <!-- SAHNE 0 (Ekran Görüntüsü 4): Merkezde Partikül Portre Silüeti, Solda İsim, Sağda Unvan -->
+    <section class="scene scene--hero" data-scene="0">
+      <div class="hero-split">
+        <h1 class="hero-split__left">Okan Yörük</h1>
+        <p class="hero-split__right">Software &amp; Systems Engineer</p>
+      </div>
     </section>
 
-    <section id="yetenekler" class="section">
-      <h2>Yetenekler</h2>
-      <ul class="skills">
-        <li class="skills__item">HTML5 &amp; CSS3</li>
-        <li class="skills__item">JavaScript (ES6+)</li>
-        <li class="skills__item">React</li>
-        <li class="skills__item">Node.js</li>
-        <li class="skills__item">Git &amp; GitHub</li>
-        <li class="skills__item">SQL</li>
-      </ul>
+    <!-- SAHNE 1 (Ekran Görüntüsü 5): Portre Silüeti Sağa Kayar, Solda 3 Satırlık Tanıtım Yazısı Belirir -->
+    <section class="scene scene--intro" data-scene="1">
+      <div class="intro-block" data-fade-block="intro">
+        <p class="statement-text">
+          Karmaşık sistemleri ve iddialı fikirleri hızlı, güvenilir ve etkileşimli deneyimlere dönüştürüyorum. Kurumsal ağ, arka yüz, yapay görme - uçtan uca yazılım ve sistem mimarisi.
+        </p>
+      </div>
     </section>
 
-    <section id="projeler" class="section">
-      <h2>Projeler</h2>
-
-      <ul class="project-list" data-project-list>
-        <li class="project-list__item">
-          <a class="project-row" href="#" data-project-row data-project="1">
-            <span class="project-row__index" aria-hidden="true">01</span>
-            <span class="project-row__title">Proje Bir</span>
-            <span class="project-row__meta">React · Node.js</span>
-            <span class="project-row__arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-
-        <li class="project-list__item">
-          <a class="project-row" href="#" data-project-row data-project="2">
-            <span class="project-row__index" aria-hidden="true">02</span>
-            <span class="project-row__title">Proje İki</span>
-            <span class="project-row__meta">HTML · CSS · JS</span>
-            <span class="project-row__arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-
-        <li class="project-list__item">
-          <a class="project-row" href="#" data-project-row data-project="3">
-            <span class="project-row__index" aria-hidden="true">03</span>
-            <span class="project-row__title">Proje Üç</span>
-            <span class="project-row__meta">SQL · API</span>
-            <span class="project-row__arrow" aria-hidden="true">↗</span>
-          </a>
-        </li>
-      </ul>
+    <!-- SAHNE 2 (Ekran Görüntüsü 6, 7, 8): Yatay Dilimlenerek Küreye Dönüşüm + Küre Etrafında Dönen Kavisli Yazı -->
+    <section class="scene scene--globe" data-scene="2">
+      <div class="globe-orbit" data-fade-block="globe" aria-hidden="true">
+        <svg class="globe-orbit__svg" viewBox="0 0 600 600">
+          <defs>
+            <path id="orbit-top" d="M 300, 300 m -232, 0 a 232,232 0 1,1 464,0 a 232,232 0 1,1 -464,0" />
+          </defs>
+          <text class="globe-orbit__text">
+            <textPath href="#orbit-top" startOffset="12%">
+              Türksat A.Ş. · Sistem ve Ağ
+            </textPath>
+          </text>
+          <text class="globe-orbit__text">
+            <textPath href="#orbit-top" startOffset="62%">
+              Uçtan uca yazılım mimarisi
+            </textPath>
+          </text>
+        </svg>
+      </div>
     </section>
 
-    <section id="iletisim" class="section">
-      <h2>İletişim</h2>
-      <p>Birlikte çalışmak isterseniz bana ulaşabilirsiniz.</p>
+    <!-- SAHNE 3 (Ekran Görüntüsü 9, 10, 11): Küre Dilimlenerek Türkiye Haritası Partikül Silüetine Dönüşür -->
+    <section class="scene scene--map" data-scene="3">
+      <div class="map-pin" data-fade-block="map">
+        <span class="map-pin__label">Based in Türkiye</span>
+        <span class="map-pin__sub">Ankara &amp; Konya</span>
+      </div>
+    </section>
 
-      <form class="contact-form" action="#" method="post">
-        <label class="contact-form__label" for="name">Ad Soyad</label>
-        <input class="contact-form__input" type="text" id="name" name="name" placeholder="Adınız" required>
+    <!-- SAHNE 4 (Ekran Görüntüsü 12, 13): Diyagonal DNA/Dalga Şeridi + Sağ Altta Felsefe Metni -->
+    <section class="scene scene--philosophy" data-scene="4">
+      <div class="philosophy-block" data-fade-block="philosophy">
+        <p class="statement-text">
+          Yalnızca bana teslim edilen işi kodlamıyorum - kurumsal ağ güvenliğinden ilişkisel veri tabanına, derin öğrenme modellerinden arayüz akışına kadar işi gerçekten yükseltecek her noktaya kendi mühendislik içgüdümü katıyorum.
+        </p>
+      </div>
+    </section>
 
-        <label class="contact-form__label" for="email">E-posta</label>
-        <input class="contact-form__input" type="email" id="email" name="email" placeholder="ornek@mail.com" required>
+    <!-- SAHNE 5 (Ekran Görüntüsü 14, 15, 16, 17): SOME SELECTED WORKS — Yatay Kaydırılan Dalgalı (Wavy) Proje Vitrinleri -->
+    <section class="scene scene--works" id="selected-works" data-scene="5">
+      <div class="works-sticky">
+        <div class="works-header">
+          <span class="works-eyebrow">SOME SELECTED WORKS</span>
+        </div>
 
-        <label class="contact-form__label" for="message">Mesaj</label>
-        <textarea class="contact-form__textarea" id="message" name="message" rows="5" placeholder="Mesajınız" required></textarea>
+        <div class="works-track-wrap">
+          <div class="works-track" data-works-track>
 
-        <button class="contact-form__button" type="submit">Gönder</button>
-      </form>
+            <!-- Proje 1: Çoklu Portföy & Halka Arz (2026) -->
+            <article class="wavy-work" data-work-item="ipo" tabindex="0" role="button" aria-label="Çoklu Portföy ve Halka Arz Talep Yönetim Sistemi detaylarını aç">
+              <div class="wavy-work__media">
+                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="ipo" data-img-src="assets/projects/coklu-portfoy-halka-arz.png"></canvas>
+              </div>
+              <div class="wavy-work__meta">
+                <h2 class="wavy-work__title">Çoklu Portföy &amp; Halka Arz</h2>
+                <span class="wavy-work__year">2026</span>
+              </div>
+            </article>
 
-      <ul class="social">
-        <li><a href="mailto:ornek@mail.com">ornek@mail.com</a></li>
-        <li><a href="#" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="#" target="_blank" rel="noopener">LinkedIn</a></li>
-      </ul>
+            <!-- Proje 2: CNN Duygu Durumu Analizi (2026) -->
+            <article class="wavy-work" data-work-item="emotion" tabindex="0" role="button" aria-label="Duygu Durumu Analizi ile Kişiselleştirilmiş Öneri Uygulaması detaylarını aç">
+              <div class="wavy-work__media">
+                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="emotion" data-img-src="assets/projects/duygu-durumu-oneri.png"></canvas>
+              </div>
+              <div class="wavy-work__meta">
+                <h2 class="wavy-work__title">CNN Duygu Durumu Analizi</h2>
+                <span class="wavy-work__year">2026</span>
+              </div>
+            </article>
+
+            <!-- Proje 3: Bookan Sosyal Kitap Platformu (2025) -->
+            <article class="wavy-work" data-work-item="bookan" tabindex="0" role="button" aria-label="Bookan Sosyal Kitap Keşif Platformu detaylarını aç">
+              <div class="wavy-work__media">
+                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="bookan" data-img-src="assets/projects/bookan-platform.png"></canvas>
+              </div>
+              <div class="wavy-work__meta">
+                <h2 class="wavy-work__title">Bookan Kitap Platformu</h2>
+                <span class="wavy-work__year">2025</span>
+              </div>
+            </article>
+
+            <!-- Proje 4: Türksat A.Ş. Sistem ve Ağ Yönetimi (2026) -->
+            <article class="wavy-work" data-work-item="turksat" tabindex="0" role="button" aria-label="Türksat A.Ş. Sistem ve Ağ Yönetimi deneyimi detaylarını aç">
+              <div class="wavy-work__media">
+                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="turksat" data-img-src="assets/projects/turksat-sistem-ag.png"></canvas>
+              </div>
+              <div class="wavy-work__meta">
+                <h2 class="wavy-work__title">Türksat A.Ş. — Sistem &amp; Ağ</h2>
+                <span class="wavy-work__year">2026</span>
+              </div>
+            </article>
+
+            <!-- Proje 5: TCP/UDP Soket & Qt C++ Otomasyon (2025) -->
+            <article class="wavy-work" data-work-item="systems" tabindex="0" role="button" aria-label="TCP/UDP Soket Mimarisi ve Qt C++ Envanter Sistemi detaylarını aç">
+              <div class="wavy-work__media">
+                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="systems" data-img-src="assets/projects/tcp-udp-soket-analizi.png"></canvas>
+              </div>
+              <div class="wavy-work__meta">
+                <h2 class="wavy-work__title">TCP/UDP Soket &amp; Qt C++</h2>
+                <span class="wavy-work__year">2025</span>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAHNE 6 (Ekran Görüntüsü 18, 19, 20): Sarmal Yay -> Dönen Galaksi Girdabı + "And still working on plenty more." -->
+    <section class="scene scene--more" data-scene="6">
+      <div class="more-block" data-fade-block="more">
+        <p class="statement-text">
+          And still working on plenty more.
+        </p>
+        <p class="statement-sub">
+          Necmettin Erbakan Üniversitesi Bilgisayar Mühendisliği (3,18 / 4,00) &amp; Türksat A.Ş.
+        </p>
+      </div>
+    </section>
+
+    <!-- SAHNE 7 (Ekran Görüntüsü 21, 22, 23): Partikül Dikdörtgen Çerçeve + GET IN TOUCH + Altbilgi -->
+    <section class="scene scene--contact" data-scene="7">
+      <div class="contact-center" data-fade-block="contact">
+        <span class="contact-eyebrow">GET IN TOUCH</span>
+        <a class="contact-email" href="mailto:okanyoruk.tr@gmail.com" data-cursor-ring>
+          okanyoruk.tr@gmail.com
+        </a>
+        <p class="contact-sub">
+          or reach out on
+          <a href="https://linkedin.com/in/okanyoruk" target="_blank" rel="noopener" data-cursor-ring>LinkedIn</a>
+          ·
+          <a href="https://github.com/yorukokan" target="_blank" rel="noopener" data-cursor-ring>GitHub</a>
+          ·
+          <a href="assets/Okan-Yoruk-CV.pdf" target="_blank" rel="noopener" data-cursor-ring>Resume (PDF)</a>
+        </p>
+      </div>
+
+      <footer class="minimal-footer">
+        <div class="minimal-footer__left">
+          <span class="monogram" aria-hidden="true">OY</span>
+          <span>OKAN YÖRÜK - &copy; 2026 - ANKARA / KONYA · +90 (543) 571 92 47</span>
+        </div>
+        <div class="minimal-footer__right">
+          <a href="assets/Okan-Yoruk-CV.pdf" target="_blank" rel="noopener" data-cursor-ring>
+            THIS WEBSITE DOESN'T USE COOKIES. DOWNLOAD FULL CV (PDF)?
+          </a>
+        </div>
+      </footer>
     </section>
 
   </main>
 
-  <footer class="footer">
-    <p>&copy; 2026 Portfolyo. Tüm hakları saklıdır.</p>
-  </footer>
+  <!-- Proje Kartına Tıklandığında Açılan Minimal Detay Çekmecesi -->
+  <div class="project-modal" data-project-modal hidden aria-modal="true" role="dialog" aria-labelledby="modal-title">
+    <div class="project-modal__backdrop" data-modal-close></div>
+    <div class="project-modal__dialog">
+      <div class="project-modal__top">
+        <span class="project-modal__year" data-modal-year>2026</span>
+        <button class="project-modal__close" type="button" data-modal-close data-cursor-ring>Kapat ✕</button>
+      </div>
+      <h3 class="project-modal__title" id="modal-title" data-modal-title>Çoklu Portföy &amp; Halka Arz</h3>
+      <p class="project-modal__stack" data-modal-stack>Node.js · Express.js · Supabase · PostgreSQL · REST API</p>
+      <ul class="project-modal__list" data-modal-list></ul>
+    </div>
+  </div>
 
-  <!-- GSAP + ScrollTrigger -->
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+  <!-- Portre Veri Kaynağı (file:// ve http:// üzerinde CORS hatasız çalışır) -->
+  <script src="portrait-data.js" defer></script>
 
-  <!-- Lenis -->
+  <!-- Sıfır Bağımlılıklı WebGL + 2D Fallback 8 Evreli Partikül Motoru -->
+  <script src="particles3d.js" defer></script>
+
+  <!-- Lenis Smooth Scroll (Opsiyonel CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
 
+  <!-- Arayüz, Dalgalı Proje Kanvasları ve Scroll Koreografisi -->
   <script src="script.js" defer></script>
-
-  <!-- Three.js hero sahnesi (jsDelivr ES modülü) -->
-  <script type="module" src="hero3d.js"></script>
 </body>
 </html>

@@ -1,858 +1,514 @@
-/* =========================================================
-   Portfolyo — Etkileşimler
-   - Mobil menü aç/kapa
-   - Bölümlere yumuşak kaydırma
-   ========================================================= */
+/* ==========================================================================
+   Okan Yörük — High-FPS Scroll Choreography, Wavy Canvases & Custom Cursor
+   ========================================================================== */
 
 (() => {
   "use strict";
 
-  const MOBILE_QUERY = "(max-width: 720px)";
-
-  const header = document.querySelector(".header");
-  const nav = document.querySelector(".nav");
-  const navList = nav ? nav.querySelector(".nav__list") : null;
-
-  const mobileQuery = window.matchMedia(MOBILE_QUERY);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  let toggle = null;
-  let generatedToggle = false;
-  let lenis = null;
-
-  // Preloader sayfa boyunca kaydırmayı kilitler
-  if (document.querySelector("[data-preloader]")) {
-    document.documentElement.classList.add("is-loading");
-
-    // Yenilemede önceki kaydırma konumuna dönmeyi engelle
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
-    }
-    window.scrollTo(0, 0);
-  }
-
-  /* ---------------------------------------------------------
-     Mobil menü
-     --------------------------------------------------------- */
-
-  /**
-   * index.html'de menü butonu bulunmadığı için buton burada
-   * oluşturuluyor ve stilleri sayfaya ekleniyor.
-   * İleride index.html/style.css'e taşınırsa bu bölüm sadeleşebilir.
-   */
-  function addToggleStyles() {
-    if (document.getElementById("nav-toggle-styles")) return;
-
-    const style = document.createElement("style");
-    style.id = "nav-toggle-styles";
-    style.textContent = `
-      .nav__toggle {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        width: 42px;
-        height: 42px;
-        padding: 0;
-        font: inherit;
-        font-size: 1.3rem;
-        line-height: 1;
-        color: var(--text, #e8eef5);
-        background: transparent;
-        border: 1px solid var(--border, #243040);
-        border-radius: 10px;
-        cursor: pointer;
-        transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-      }
-
-      .nav__toggle:hover,
-      .nav__toggle:focus-visible {
-        color: var(--accent, #4fd1c5);
-        border-color: var(--accent, #4fd1c5);
-        background: var(--surface, #151c25);
-      }
-
-      @media (max-width: 720px) {
-        .nav {
-          position: relative;
-        }
-
-        .nav__toggle {
-          position: absolute;
-          top: 6px;
-          right: 16px;
-          display: inline-flex;
-        }
-
-        /* Menü yalnızca JS çalıştığında gizlenir (progressive enhancement) */
-        .nav--enhanced .nav__list {
-          display: none;
-        }
-
-        .nav--enhanced.nav--open .nav__list {
-          display: flex;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function createToggle() {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "nav__toggle";
-    button.setAttribute("aria-expanded", "false");
-    button.setAttribute("aria-label", "Menüyü aç");
-    button.textContent = "☰";
-    nav.insertBefore(button, navList);
-    return button;
-  }
-
-  function setMenu(open) {
-    if (!nav || !toggle) return;
-
-    nav.classList.toggle("nav--open", open);
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "Menüyü kapat" : "Menüyü aç");
-
-    if (generatedToggle) {
-      toggle.textContent = open ? "✕" : "☰";
-    }
-  }
-
-  function closeMenu() {
-    if (nav && nav.classList.contains("nav--open")) {
-      setMenu(false);
-    }
-  }
-
-  function initMenu() {
-    if (!nav || !navList) return;
-
-    addToggleStyles();
-
-    if (!navList.id) {
-      navList.id = "primary-menu";
-    }
-
-    toggle = nav.querySelector(".nav__toggle");
-    generatedToggle = !toggle;
-
-    if (!toggle) {
-      toggle = createToggle();
-    }
-
-    toggle.setAttribute("aria-controls", navList.id);
-    setMenu(false);
-
-    // JS aktif olduğunda mobil menü katlanabilir hale gelir
-    nav.classList.add("nav--enhanced");
-
-    toggle.addEventListener("click", () => {
-      setMenu(!nav.classList.contains("nav--open"));
-    });
-
-    // Menüdeki bir bağlantıya tıklanınca menüyü kapat
-    navList.addEventListener("click", (event) => {
-      if (event.target.closest?.("a")) {
-        closeMenu();
-      }
-    });
-
-    // Menü dışına tıklanınca kapat
-    document.addEventListener("click", (event) => {
-      if (!mobileQuery.matches || !nav.classList.contains("nav--open")) return;
-      if (!nav.contains(event.target)) {
-        closeMenu();
-      }
-    });
-
-    // Escape ile kapat ve odağı butona geri ver
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && nav.classList.contains("nav--open")) {
-        closeMenu();
-        toggle.focus();
-      }
-    });
-
-    // Masaüstü/mobil geçişinde menü durumunu sıfırla
-    const syncViewport = () => setMenu(false);
-    if (typeof mobileQuery.addEventListener === "function") {
-      mobileQuery.addEventListener("change", syncViewport);
-    } else {
-      mobileQuery.addListener(syncViewport);
-    }
-  }
-
-  /* ---------------------------------------------------------
-     Yumuşak kaydırma
-     --------------------------------------------------------- */
-
-  function getHeaderOffset() {
-    return header ? header.getBoundingClientRect().height + 12 : 12;
-  }
+  /* ------------------------------------------------------------------------
+     1. Lenis Yumuşak Kaydırma + Kaydırma Hızı (Velocity)
+     ------------------------------------------------------------------------ */
+  let scrollVelocity = 0;
+  let lastScrollY = window.scrollY;
 
   function initSmoothScroll() {
-    const links = document.querySelectorAll('a[href^="#"]');
+    if (reducedMotion.matches || typeof window.Lenis !== "function") return;
 
-    links.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        const hash = link.getAttribute("href");
-        if (!hash || hash === "#") return;
-
-        let target;
-        try {
-          target = document.querySelector(hash);
-        } catch {
-          return; // Geçersiz seçici — varsayılan davranışa bırak
-        }
-
-        if (!target) return;
-
-        event.preventDefault();
-
-        // Menü açıksa önce kapat: başlık yüksekliği küçülsün
-        closeMenu();
-
-        const top = Math.max(
-          0,
-          window.scrollY + target.getBoundingClientRect().top - getHeaderOffset()
-        );
-
-        if (lenis) {
-          lenis.scrollTo(top, { immediate: reducedMotion.matches });
-        } else {
-          window.scrollTo({
-            top,
-            behavior: reducedMotion.matches ? "auto" : "smooth",
-          });
-        }
-
-        if (history.pushState) {
-          history.pushState(null, "", hash);
-        } else {
-          window.location.hash = hash;
-        }
-
-        // Klavye kullanıcıları için odağı hedef bölüme taşı
-        target.setAttribute("tabindex", "-1");
-        target.focus({ preventScroll: true });
-      });
-    });
-  }
-
-  /* ---------------------------------------------------------
-     Lenis + ScrollTrigger
-     --------------------------------------------------------- */
-
-  function initSmoothScrolling() {
-    const LenisConstructor = window.Lenis;
-    if (!LenisConstructor || reducedMotion.matches) return;
-
-    lenis = new LenisConstructor({
-      duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    const lenis = new window.Lenis({
+      lerp: 0.095,
       smoothWheel: true,
     });
 
-    const gsapLib = window.gsap;
-    const scrollTriggerLib = window.ScrollTrigger;
+    lenis.on("scroll", (e) => {
+      scrollVelocity = e.velocity || 0;
+    });
 
-    if (gsapLib && scrollTriggerLib) {
-      // Lenis kaydırmasını ScrollTrigger ile senkronize et
-      lenis.on("scroll", scrollTriggerLib.update);
-      gsapLib.ticker.add((time) => lenis.raf(time * 1000));
-      gsapLib.ticker.lagSmoothing(0);
-    } else {
-      const raf = (time) => {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      };
+    function raf(time) {
+      lenis.raf(time);
       requestAnimationFrame(raf);
     }
+    requestAnimationFrame(raf);
   }
 
-  /* ---------------------------------------------------------
-     Kaydırma animasyonları
-     --------------------------------------------------------- */
+  window.addEventListener(
+    "scroll",
+    () => {
+      const dy = window.scrollY - lastScrollY;
+      lastScrollY = window.scrollY;
+      scrollVelocity = dy * 0.22;
+    },
+    { passive: true }
+  );
 
-  function splitHeading(heading) {
-    const words = heading.textContent.trim().split(/\s+/).filter(Boolean);
-    if (!words.length) return [];
-
-    heading.textContent = "";
-    heading.classList.add("heading--split");
-    const inners = [];
-
-    words.forEach((word, index) => {
-      if (index > 0) {
-        heading.appendChild(document.createTextNode(" "));
-      }
-
-      const mask = document.createElement("span");
-      mask.className = "word-mask";
-
-      const inner = document.createElement("span");
-      inner.className = "word-inner";
-      inner.textContent = word;
-
-      mask.appendChild(inner);
-      heading.appendChild(mask);
-      inners.push(inner);
-    });
-
-    return inners;
-  }
-
-  function initHeroScrollAnimation(gsapLib) {
-    const hero = document.querySelector(".hero");
-    if (!hero) return;
-
-    const state = { progress: 0 };
-
-    const bind = (controller) => {
-      if (!controller || typeof controller.setScrollProgress !== "function") return;
-      if (controller.scrollBound) return;
-
-      controller.scrollBound = true;
-
-      gsapLib.to(state, {
-        progress: 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: hero,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.6,
-        },
-        onUpdate: () => controller.setScrollProgress(state.progress),
-      });
-    };
-
-    // hero3d.js bu betikten önce veya sonra yüklenebilir
-    if (window.hero3D) {
-      bind(window.hero3D);
-    }
-
-    window.addEventListener(
-      "hero3d:ready",
-      (event) => bind(event.detail),
-      { once: true }
-    );
-  }
-
-  function refreshScrollTriggers(scrollTriggerLib) {
-    const refresh = () => scrollTriggerLib.refresh();
-
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(refresh).catch(() => {});
-    }
-
-    window.addEventListener("load", refresh, { once: true });
-  }
-
-  function initScrollAnimations() {
-    const gsapLib = window.gsap;
-    const scrollTriggerLib = window.ScrollTrigger;
-
-    if (!gsapLib || !scrollTriggerLib || reducedMotion.matches) return;
-
-    gsapLib.registerPlugin(scrollTriggerLib);
-
-    // Bölüm başlıkları: kelime kelime, maskenin altından yukarı
-    document
-      .querySelectorAll("main .section > h1, main .section > h2")
-      .forEach((heading) => {
-        const words = splitHeading(heading);
-        if (!words.length) return;
-
-        gsapLib.fromTo(
-          words,
-          { yPercent: 115 },
-          {
-            yPercent: 0,
-            duration: 1.1,
-            ease: "power3.out",
-            stagger: 0.06,
-            scrollTrigger: {
-              trigger: heading,
-              start: "top 85%",
-              once: true,
-            },
-          }
-        );
-      });
-
-    // Paragraflar: fade + y:40
-    document.querySelectorAll("main .section p").forEach((paragraph) => {
-      gsapLib.from(paragraph, {
-        opacity: 0,
-        y: 40,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: paragraph,
-          start: "top 88%",
-          once: true,
-        },
-      });
-    });
-
-    initHeroScrollAnimation(gsapLib);
-    refreshScrollTriggers(scrollTriggerLib);
-  }
-
-  /* ---------------------------------------------------------
-     Özel imleç + magnetic butonlar
-     --------------------------------------------------------- */
-
+  /* ------------------------------------------------------------------------
+     2. Özel İmleç (Parlayan Beyaz Nokta + Hover'da 48px İnce Çember)
+     ------------------------------------------------------------------------ */
   function initCustomCursor() {
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const cursor = document.querySelector("[data-cursor]");
+    if (!finePointer.matches || !(cursor instanceof HTMLElement)) return;
 
-    // Dokunmatik cihazlarda ve hareket azaltma tercihinde imleç kapalı
-    if (!finePointer.matches || reducedMotion.matches) return;
-
-    const dot = document.createElement("div");
-    dot.className = "cursor__dot";
-    dot.setAttribute("aria-hidden", "true");
-
-    const ring = document.createElement("div");
-    ring.className = "cursor__ring";
-    ring.setAttribute("aria-hidden", "true");
-
-    document.body.append(dot, ring);
-    document.documentElement.classList.add("has-custom-cursor");
-
-    const magnetics = Array.from(
-      document.querySelectorAll(".button, button")
-    ).map((element) => {
-      element.classList.add("is-magnetic");
-      return { element, x: 0, y: 0 };
-    });
-
-    const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    const dotPosition = { x: pointer.x, y: pointer.y };
-    const ringPosition = { x: pointer.x, y: pointer.y };
-
-    const MAX_PULL = 15;
-    const ACTIVATION_DISTANCE = 90;
-    const DOT_EASING = 0.55;
-    const RING_EASING = 0.16;
-
+    const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const pos = { x: target.x, y: target.y };
     let visible = false;
-    let frameId = 0;
 
-    function updateMagnets() {
-      magnetics.forEach((item) => {
-        const rect = item.element.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        target.x = event.clientX;
+        target.y = event.clientY;
 
-        // Rect, uygulanan transform'u da içerir; taban merkeze geri dön
-        const centerX = rect.left + rect.width / 2 - item.x;
-        const centerY = rect.top + rect.height / 2 - item.y;
-        const deltaX = pointer.x - centerX;
-        const deltaY = pointer.y - centerY;
-        const distance = Math.hypot(deltaX, deltaY);
-        const activation =
-          Math.max(rect.width, rect.height) / 2 + ACTIVATION_DISTANCE;
-
-        let targetX = 0;
-        let targetY = 0;
-
-        if (distance < activation) {
-          const strength = 1 - distance / activation;
-          targetX = deltaX * 0.35 * strength;
-          targetY = deltaY * 0.35 * strength;
-
-          const magnitude = Math.hypot(targetX, targetY);
-          if (magnitude > MAX_PULL) {
-            targetX = (targetX / magnitude) * MAX_PULL;
-            targetY = (targetY / magnitude) * MAX_PULL;
-          }
+        if (!visible) {
+          visible = true;
+          pos.x = target.x;
+          pos.y = target.y;
+          cursor.classList.add("is-visible");
         }
 
-        item.x += (targetX - item.x) * 0.18;
-        item.y += (targetY - item.y) * 0.18;
+        const el = event.target;
+        const isRingTarget =
+          el instanceof Element
+            ? el.closest(".wavy-work, [data-cursor-ring], a, button")
+            : null;
+        cursor.classList.toggle("is-ring", Boolean(isRingTarget));
+      },
+      { passive: true }
+    );
 
-        item.element.style.transform =
-          `translate3d(${item.x}px, ${item.y}px, 0)`;
-      });
-    }
-
-    function render() {
-      dotPosition.x += (pointer.x - dotPosition.x) * DOT_EASING;
-      dotPosition.y += (pointer.y - dotPosition.y) * DOT_EASING;
-      ringPosition.x += (pointer.x - ringPosition.x) * RING_EASING;
-      ringPosition.y += (pointer.y - ringPosition.y) * RING_EASING;
-
-      dot.style.transform = `translate3d(${dotPosition.x}px, ${dotPosition.y}px, 0) translate(-50%, -50%)`;
-      ring.style.transform = `translate3d(${ringPosition.x}px, ${ringPosition.y}px, 0) translate(-50%, -50%)`;
-
-      updateMagnets();
-
-      frameId = requestAnimationFrame(render);
-    }
-
-    function start() {
-      if (frameId) return;
-      frameId = requestAnimationFrame(render);
-    }
-
-    function stop() {
-      if (!frameId) return;
-      cancelAnimationFrame(frameId);
-      frameId = 0;
-    }
-
-    function hide() {
-      if (!visible) return;
-
+    document.addEventListener("mouseleave", () => {
       visible = false;
-      dot.classList.remove("is-visible");
-      ring.classList.remove("is-visible", "is-hover");
-      stop();
-
-      magnetics.forEach((item) => {
-        item.x = 0;
-        item.y = 0;
-        item.element.style.transform = "";
-      });
-    }
-
-    function onPointerMove(event) {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-
-      if (!visible) {
-        // İlk harekette imleci zıplatmadan göster
-        dotPosition.x = pointer.x;
-        dotPosition.y = pointer.y;
-        ringPosition.x = pointer.x;
-        ringPosition.y = pointer.y;
-
-        visible = true;
-        dot.classList.add("is-visible");
-        ring.classList.add("is-visible");
-        start();
-      }
-
-      const target = event.target;
-      const interactive =
-        target instanceof Element ? target.closest("a, button") : null;
-      ring.classList.toggle("is-hover", Boolean(interactive));
-    }
-
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.addEventListener("mouseleave", hide);
-    window.addEventListener("blur", hide);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) hide();
+      cursor.classList.remove("is-visible");
     });
+
+    function renderCursor() {
+      pos.x += (target.x - pos.x) * 0.28;
+      pos.y += (target.y - pos.y) * 0.28;
+      cursor.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
+      requestAnimationFrame(renderCursor);
+    }
+    requestAnimationFrame(renderCursor);
   }
 
-  /* ---------------------------------------------------------
-     Proje önizlemesi (imleci takip eden gradient kutu)
-     --------------------------------------------------------- */
+  /* ------------------------------------------------------------------------
+     3. Yatay Kaydırılan Projeler + Yüksek Performanslı Wavy Kanvaslar
+        (Yalnızca #selected-works ekranda görünürken çizilir -> Sıfır gereksiz CPU yükü!)
+     ------------------------------------------------------------------------ */
+  function initWorksAndWavyCanvases() {
+    const section = document.getElementById("selected-works");
+    const track = document.querySelector("[data-works-track]");
+    const canvases = Array.from(document.querySelectorAll("[data-wavy-canvas]"));
+    if (!section || !(track instanceof HTMLElement) || !canvases.length) return;
 
-  function initProjectPreview() {
-    const list = document.querySelector("[data-project-list]");
-    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const W = 760;
+    const H = 460;
+    const PAD_Y = 20;
+    const INNER_H = H - PAD_Y * 2;
 
-    if (!list || !finePointer.matches || reducedMotion.matches) return;
+    function createSourceArtwork(key, externalImg) {
+      const off = document.createElement("canvas");
+      off.width = W;
+      off.height = INNER_H;
+      const ctx = off.getContext("2d");
+      if (!ctx) return off;
 
-    const preview = document.createElement("div");
-    preview.className = "project-preview";
-    preview.setAttribute("aria-hidden", "true");
-
-    const media = document.createElement("div");
-    media.className = "project-preview__media";
-    preview.appendChild(media);
-    document.body.appendChild(preview);
-
-    const pointer = { x: 0, y: 0 };
-    const position = { x: 0, y: 0 };
-
-    const OFFSET = 32;
-    const EDGE = 16;
-    const EASING = 0.14;
-
-    let visible = false;
-    let frameId = 0;
-
-    function getTarget() {
-      const width = preview.offsetWidth;
-      const height = preview.offsetHeight;
-
-      let x = pointer.x + OFFSET;
-      if (x + width > window.innerWidth - EDGE) {
-        x = pointer.x - width - OFFSET;
+      if (externalImg) {
+        ctx.drawImage(externalImg, 0, 0, W, INNER_H);
+        return off;
       }
 
-      let y = pointer.y - height / 2;
-      const maxY = window.innerHeight - height - EDGE;
-      y = Math.max(EDGE, Math.min(y, Math.max(EDGE, maxY)));
+      if (key === "ipo") {
+        ctx.fillStyle = "#F4F4F2";
+        ctx.fillRect(0, 0, W, INNER_H);
 
-      return { x, y };
-    }
-
-    function render() {
-      const target = getTarget();
-
-      position.x += (target.x - position.x) * EASING;
-      position.y += (target.y - position.y) * EASING;
-
-      preview.style.transform =
-        `translate3d(${position.x}px, ${position.y}px, 0)`;
-
-      frameId = requestAnimationFrame(render);
-    }
-
-    function start() {
-      if (frameId) return;
-      frameId = requestAnimationFrame(render);
-    }
-
-    function stop() {
-      if (!frameId) return;
-      cancelAnimationFrame(frameId);
-      frameId = 0;
-    }
-
-    function show(row) {
-      if (preview.dataset.project !== row.dataset.project) {
-        preview.dataset.project = row.dataset.project;
-      }
-
-      if (visible) return;
-
-      const target = getTarget();
-      position.x = target.x;
-      position.y = target.y;
-      preview.style.transform =
-        `translate3d(${position.x}px, ${position.y}px, 0)`;
-
-      visible = true;
-      preview.classList.add("is-visible");
-      start();
-    }
-
-    function hide() {
-      if (!visible) return;
-
-      visible = false;
-      preview.classList.remove("is-visible");
-      stop();
-    }
-
-    list.addEventListener("pointermove", (event) => {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-
-      const target = event.target;
-      const row =
-        target instanceof Element
-          ? target.closest("[data-project-row]")
-          : null;
-
-      if (row && list.contains(row)) {
-        show(row);
-      } else {
-        hide();
-      }
-    });
-
-    list.addEventListener("pointerleave", hide);
-    window.addEventListener("scroll", hide, { passive: true });
-    window.addEventListener("blur", hide);
-    document.addEventListener("mouseleave", hide);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) hide();
-    });
-  }
-
-  /* ---------------------------------------------------------
-     Preloader + hero başlığı
-     --------------------------------------------------------- */
-
-  function initHeroTitle() {
-    const title = document.querySelector("[data-hero-title]");
-    if (!title) return () => {};
-
-    const lines = Array.from(title.querySelectorAll(".hero__line"));
-    const chars = [];
-
-    lines.forEach((line) => {
-      const text = line.textContent;
-      line.textContent = "";
-
-      Array.from(text).forEach((character) => {
-        if (character === " ") {
-          line.appendChild(document.createTextNode(" "));
-          return;
-        }
-
-        const mask = document.createElement("span");
-        mask.className = "char-mask";
-
-        const inner = document.createElement("span");
-        inner.className = "char";
-        inner.textContent = character;
-
-        mask.appendChild(inner);
-        line.appendChild(mask);
-        chars.push(inner);
-      });
-    });
-
-    let played = false;
-
-    return function play() {
-      if (played) return;
-      played = true;
-
-      // Hareket azaltma tercihinde başlık doğrudan görünür
-      if (reducedMotion.matches) {
-        chars.forEach((char) => {
-          char.style.transform = "none";
+        const topCards = [
+          { bg: "#141417", title: "ARACI KURUM #1", sub: "Teminat Blokajı" },
+          { bg: "#1E222B", title: "ARACI KURUM #2", sub: "Lot Dağıtım" },
+          { bg: "#E8EAE6", title: "SUPABASE DB", sub: "İlişkisel Şema", darkText: true },
+          { bg: "#222630", title: "PORTFÖY #3", sub: "Konsolide Nakit" },
+          { bg: "#141417", title: "REST API", sub: "Node.js + Express" },
+        ];
+        const tw = (W - 36) / 5;
+        topCards.forEach((c, idx) => {
+          const x = 6 + idx * (tw + 6);
+          ctx.fillStyle = c.bg;
+          ctx.fillRect(x, 6, tw, 82);
+          ctx.fillStyle = c.darkText ? "#18181B" : "#F0F2F0";
+          ctx.font = "600 9px Inter, sans-serif";
+          ctx.fillText(c.title, x + 10, 26);
+          ctx.fillStyle = c.darkText ? "#52525B" : "#9CA3AF";
+          ctx.font = "400 8px Inter, sans-serif";
+          ctx.fillText(c.sub, x + 10, 42);
         });
-        return;
-      }
 
-      const gsapLib = window.gsap;
+        ctx.fillStyle = "#121215";
+        ctx.fillRect(6, 94, 340, 224);
+        ctx.fillStyle = "#D4A373";
+        ctx.fillRect(18, 108, 128, 92);
+        ctx.fillStyle = "#F0F2F0";
+        ctx.font = "600 18px Inter, sans-serif";
+        ctx.fillText("HALKA ARZ", 164, 152);
+        ctx.fillText("× PORTFÖY", 164, 174);
+        ctx.font = "400 9px Inter, sans-serif";
+        ctx.fillStyle = "#9CA3AF";
+        ctx.fillText("Node.js · Supabase · PostgreSQL", 18, 286);
+        ctx.fillText("Çoklu Hesap Talep & Lot Motoru", 18, 300);
 
-      if (gsapLib) {
-        gsapLib.fromTo(
-          chars,
-          { yPercent: 118 },
-          {
-            yPercent: 0,
-            duration: 1.05,
-            ease: "power4.out",
-            stagger: 0.045,
-            delay: 0.15,
-            overwrite: true,
-          }
-        );
-      } else {
-        // GSAP yüklenemezse Web Animations API ile aynı etki
-        chars.forEach((char, index) => {
-          char.animate(
-            [
-              { transform: "translate3d(0, 118%, 0)" },
-              { transform: "translate3d(0, 0, 0)" },
-            ],
-            {
-              duration: 900,
-              delay: 150 + index * 45,
-              easing: "cubic-bezier(0.16, 1, 0.3, 1)",
-              fill: "both",
-            }
+        ctx.fillStyle = "#F7F7F5";
+        ctx.fillRect(352, 94, 402, 224);
+        ctx.fillStyle = "#141417";
+        ctx.font = "600 16px Inter, sans-serif";
+        ctx.fillText("THE ARCHITECTURE", 374, 212);
+        ctx.strokeStyle = "rgba(20, 20, 23, 0.24)";
+        ctx.font = "600 17px Inter, sans-serif";
+        ctx.strokeText("MULTI-ACCOUNT LEDGER", 374, 236);
+        ctx.strokeText("LOT DISTRIBUTION ENGINE", 374, 258);
+        ctx.strokeText("PROFIT PROJECTIONS 2026", 374, 280);
+
+        const bw = (W - 30) / 4;
+        for (let i = 0; i < 4; i++) {
+          const bx = 6 + i * (bw + 6);
+          ctx.fillStyle = i % 2 === 0 ? "#1C1D22" : "#E5E7EB";
+          ctx.fillRect(bx, 324, bw, 88);
+          ctx.fillStyle = i % 2 === 0 ? "#F0F2F0" : "#141417";
+          ctx.font = "500 10px Inter, sans-serif";
+          ctx.fillText(
+            ["BLOKAJ HESABI", "NET MALİYET", "TAVAN SERİSİ", "KONSOLİDE NAKİT"][i],
+            bx + 12,
+            352
           );
+        }
+      } else if (key === "emotion") {
+        ctx.fillStyle = "#A31D36";
+        ctx.fillRect(0, 0, W, INNER_H);
+
+        ctx.fillStyle = "#08080B";
+        ctx.fillRect(54, 38, W - 108, INNER_H - 76);
+
+        ctx.fillStyle = "#A1A5B0";
+        ctx.fillRect(W / 2 - 20, INNER_H / 2 - 26, 40, 52);
+        ctx.strokeStyle = "#27272A";
+        ctx.strokeRect(W / 2 - 80, INNER_H / 2 - 64, 160, 128);
+
+        ctx.fillStyle = "#F0F2F0";
+        ctx.font = "400 11px Inter, sans-serif";
+        ctx.fillText("PYTORCH CNN · FER-2013", 82, 72);
+        ctx.fillStyle = "#71717A";
+        ctx.fillText("OPENCV + FASTAPI + FLUTTER", W - 246, 72);
+        ctx.fillText("REAL-TIME FACIAL EMOTION INFERENCE", 82, INNER_H - 58);
+      } else if (key === "bookan") {
+        ctx.fillStyle = "#3E2D24";
+        ctx.fillRect(0, 0, W, INNER_H);
+
+        ctx.fillStyle = "#F4F1EA";
+        ctx.fillRect(42, 34, W - 84, INNER_H - 68);
+
+        ctx.fillStyle = "#263532";
+        ctx.fillRect(42, 82, 330, INNER_H - 116);
+        ctx.fillStyle = "#D4A373";
+        ctx.beginPath();
+        ctx.arc(140, 175, 28, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#F4F1EA";
+        ctx.font = "500 14px Inter, sans-serif";
+        ctx.fillText("Dijital Kütüphane & Alıntı Ağı", 72, 260);
+        ctx.font = "400 11px Inter, sans-serif";
+        ctx.fillStyle = "#A7B3B0";
+        ctx.fillText("Flutter (Mobil & Web) · Google Books API", 72, 282);
+
+        ctx.fillStyle = "#1E1D22";
+        ctx.font = "600 13px Inter, sans-serif";
+        ctx.fillText("BOOKAN PLATFORM", 342, 64);
+        ctx.fillStyle = "#698296";
+        ctx.fillRect(436, 108, 168, 198);
+        ctx.fillStyle = "#F4F1EA";
+        ctx.font = "500 11px Inter, sans-serif";
+        ctx.fillText("ISBN & Katalog", 456, 200);
+        ctx.fillText("Senkronizasyonu", 456, 218);
+      } else if (key === "turksat") {
+        ctx.fillStyle = "#7C4D30";
+        ctx.fillRect(0, 0, W, INNER_H);
+
+        ctx.fillStyle = "#20473F";
+        ctx.fillRect(28, 28, 410, INNER_H - 56);
+
+        ctx.fillStyle = "#E8C5B0";
+        ctx.fillRect(438, 28, W - 466, INNER_H - 56);
+
+        ctx.fillStyle = "#F0F2F0";
+        ctx.font = "500 20px Inter, sans-serif";
+        ctx.fillText("TÜRKSAT A.Ş.", 62, 92);
+        ctx.font = "400 13px Inter, sans-serif";
+        ctx.fillStyle = "#A7C7BE";
+        ctx.fillText("Sistem ve Ağ Yönetimi Müdürlüğü", 62, 118);
+        ctx.fillText("Active Directory (AD DS) · DNS · DHCP · GPO", 62, 168);
+        ctx.fillText("En Az Yetki Prensibi (PoLP) & RBAC Denetimi", 62, 192);
+        ctx.fillText("Linux & Windows Server Otomasyonu", 62, 216);
+      } else {
+        ctx.fillStyle = "#16161A";
+        ctx.fillRect(0, 0, W, INNER_H);
+
+        ctx.strokeStyle = "rgba(240, 242, 240, 0.14)";
+        ctx.strokeRect(28, 28, 340, INNER_H - 56);
+        ctx.strokeRect(390, 28, 342, INNER_H - 56);
+
+        ctx.fillStyle = "#F0F2F0";
+        ctx.font = "500 16px Inter, sans-serif";
+        ctx.fillText("Python TCP / UDP Soket", 54, 78);
+        ctx.fillText("Qt & C++ Envanter Sistemi", 416, 78);
+
+        ctx.fillStyle = "#8E8E95";
+        ctx.font = "400 12px Inter, sans-serif";
+        ctx.fillText("Multithreaded İstemci-Sunucu Mimarisi", 54, 110);
+        ctx.fillText("SQLite İlişkisel CRUD & Raporlama", 416, 110);
+
+        ctx.strokeStyle = "#F0F2F0";
+        ctx.beginPath();
+        for (let x = 54; x < 340; x += 4) {
+          const y = 240 + Math.sin(x * 0.06) * 28;
+          if (x === 54) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        for (let r = 0; r < 4; r++) {
+          ctx.fillStyle = r === 0 ? "rgba(240,242,240,0.16)" : "rgba(240,242,240,0.06)";
+          ctx.fillRect(416, 160 + r * 44, 290, 34);
+        }
+      }
+
+      return off;
+    }
+
+    const items = canvases
+      .map((canvas) => {
+        if (!(canvas instanceof HTMLCanvasElement)) return null;
+        const key = canvas.getAttribute("data-wavy-canvas") || "ipo";
+        const imgSrc = canvas.getAttribute("data-img-src") || "";
+        const ctx = canvas.getContext("2d");
+
+        const state = {
+          canvas,
+          ctx,
+          key,
+          source: createSourceArtwork(key, null),
+          hovered: false,
+          hoverAmp: 0,
+        };
+
+        if (imgSrc) {
+          const img = new Image();
+          img.onload = () => {
+            state.source = createSourceArtwork(key, img);
+            drawSingleCard(state, 0, 0);
+          };
+          img.src = imgSrc;
+        }
+
+        const parentCard = canvas.closest(".wavy-work");
+        if (parentCard) {
+          parentCard.addEventListener("pointerenter", () => {
+            state.hovered = true;
+          });
+          parentCard.addEventListener("pointerleave", () => {
+            state.hovered = false;
+          });
+        }
+
+        return state;
+      })
+      .filter(Boolean);
+
+    function drawSingleCard(item, idx, tick) {
+      if (!item || !item.ctx) return;
+      const { ctx, source, hovered } = item;
+      const targetHoverAmp = hovered ? 5.5 : 0;
+      item.hoverAmp += (targetHoverAmp - item.hoverAmp) * 0.12;
+
+      const velAmp = Math.min(9, Math.abs(scrollVelocity) * 0.45);
+      const baseAmp = 6.5 + item.hoverAmp + velAmp;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const stripW = 8; // 8px strips -> 2x faster with identical smooth curve
+      for (let x = 0; x < W; x += stripW) {
+        const u = x / W;
+        const waveY =
+          Math.sin(u * Math.PI * 2.0 + tick + idx * 1.2) * baseAmp +
+          Math.cos(u * Math.PI * 1.1 - tick * 0.7) * (baseAmp * 0.32);
+
+        ctx.drawImage(
+          source,
+          x,
+          0,
+          stripW,
+          INNER_H,
+          x,
+          PAD_Y + waveY,
+          stripW,
+          INNER_H
+        );
+      }
+    }
+
+    // Initial static draw so cards are ready before scrolling into view
+    items.forEach((item, idx) => drawSingleCard(item, idx, 0));
+
+    let worksVisible = false;
+    if ("IntersectionObserver" in window) {
+      const obs = new IntersectionObserver(
+        (entries) => {
+          worksVisible = entries[0]?.isIntersecting || false;
+        },
+        { rootMargin: "200px 0px" }
+      );
+      obs.observe(section);
+    } else {
+      worksVisible = true;
+    }
+
+    function updateHorizontalPosition() {
+      if (!worksVisible) return;
+      const rect = section.getBoundingClientRect();
+      const scrollableDistance = Math.max(
+        1,
+        section.offsetHeight - window.innerHeight
+      );
+      const scrolled = Math.min(scrollableDistance, Math.max(0, -rect.top));
+      const progress = scrolled / scrollableDistance;
+
+      const maxTranslate = Math.max(
+        0,
+        track.scrollWidth - window.innerWidth * 0.78
+      );
+      const tx = -progress * maxTranslate;
+      track.style.transform = `translate3d(${tx}px, 0, 0)`;
+    }
+
+    window.addEventListener("scroll", updateHorizontalPosition, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateHorizontalPosition);
+
+    let tick = 0;
+    function loopWavy() {
+      if (worksVisible && !reducedMotion.matches) {
+        tick += 0.035;
+        items.forEach((item, idx) => drawSingleCard(item, idx, tick));
+      }
+      requestAnimationFrame(loopWavy);
+    }
+    requestAnimationFrame(loopWavy);
+  }
+
+  /* ------------------------------------------------------------------------
+     4. Proje Kartına Tıklanınca Açılan Detay Çekmecesi
+     ------------------------------------------------------------------------ */
+  function initProjectModal() {
+    const modal = document.querySelector("[data-project-modal]");
+    const yearEl = document.querySelector("[data-modal-year]");
+    const titleEl = document.querySelector("[data-modal-title]");
+    const stackEl = document.querySelector("[data-modal-stack]");
+    const listEl = document.querySelector("[data-modal-list]");
+    const closeBtns = document.querySelectorAll("[data-modal-close]");
+    const cards = document.querySelectorAll("[data-work-item]");
+
+    if (!(modal instanceof HTMLElement)) return;
+
+    const DETAILS = {
+      ipo: {
+        year: "2026",
+        title: "Çoklu Portföy & Halka Arz Talep Yönetim Sistemi",
+        stack: "Node.js · Express.js · Supabase · PostgreSQL · REST API",
+        points: [
+          "Farklı aracı kurumlar ve birden fazla yatırımcı hesabı üzerinden iletilen halka arz taleplerinin, teminat blokajlarının ve lot dağıtımlarının merkezi yönetim altyapısı geliştirildi.",
+          "Arka yüz mimarisi Node.js ile kurgulanarak Supabase/PostgreSQL üzerinde ilişkisel veri modelleri (hesaplar, hisse kodları, dağıtım oranları) ve güvenli kimlik doğrulama katmanı yapılandırıldı.",
+          "Halka arz sonuçları doğrultusunda hesap bazlı net maliyet, kâr/zarar projeksiyonları ve konsolide nakit durumunu hesaplayan analitik uç noktalar entegre edildi.",
+        ],
+      },
+      emotion: {
+        year: "Şubat – Haziran 2026",
+        title: "Duygu Durumu Analizi ile Kişiselleştirilmiş Öneri Uygulaması",
+        stack: "Flutter · FastAPI · Python · PyTorch · OpenCV · PostgreSQL · Firebase",
+        points: [
+          "Evrişimli Sinir Ağları (CNN) tabanlı model FER-2013 veri setiyle PyTorch üzerinde eğitildi; OpenCV ile anlık yüz ifadesi ve duygu tespiti sağlandı.",
+          "Tespit edilen duygu durumuna göre kullanıcıya dinamik beslenme/aktivite önerileri sunan karar algoritması geliştirilerek FastAPI ve PostgreSQL ile entegre edildi.",
+        ],
+      },
+      bookan: {
+        year: "2025",
+        title: "Bookan — Sosyal Kitap Keşif Platformu (Mobil & Web)",
+        stack: "Flutter · Dart · PHP · MySQL/PostgreSQL · Firebase · Google Books API",
+        points: [
+          "Kullanıcıların dijital kütüphane ve okuma listeleri yönetebildiği, alıntı paylaşabildiği çapraz platform (Mobil & Web) servis mimarisi geliştirildi.",
+          "Google Books API entegrasyonu ile zenginleştirilmiş katalog sorgulama, kullanıcı doğrulama ve gerçek zamanlı etkileşim altyapısı tasarlandı.",
+        ],
+      },
+      turksat: {
+        year: "Eylül 2026 – Günümüz",
+        title: "Türksat A.Ş. — Sistem ve Ağ Yönetimi Müdürlüğü",
+        stack: "Active Directory (AD DS) · DNS/DHCP · GPO · PoLP/RBAC · Linux & Windows Server · PowerShell & Bash",
+        points: [
+          "Kurumsal etki alanı altyapısında Active Directory (AD DS), DNS, DHCP ve GPO mimarilerinin yönetimi, yedekliliği ve güvenliği süreçlerinde görev alma.",
+          "En Az Yetki Prensibi (PoLP) çerçevesinde yetki devri (delegation of control), rol tabanlı erişim kontrolü (RBAC) ve sistem denetimi pratiklerinin yürütülmesi.",
+          "Linux ve Windows tabanlı kurumsal sunucu ortamlarında otomasyon scriptleri (PowerShell, Bash) ve ağ izleme süreçlerine katkı sağlama.",
+        ],
+      },
+      systems: {
+        year: "Teknik Çalışmalar",
+        title: "TCP/UDP Soket Mimarisi & Qt C++ Envanter Otomasyonu",
+        stack: "Python · Soket Programlama · TCP/UDP · C++ · Qt Widgets · SQLite",
+        points: [
+          "Bağlantı yönelimli (TCP) ve bağlantısız (UDP) modellerin soket seviyesinde başarım farklarını inceleyen çok iş parçacıklı (multithreaded) haberleşme uygulaması geliştirildi.",
+          "Qt & C++ ile ilişkisel veritabanı bağdaştırıcısıyla (SQLite) CRUD operasyonlarını, veri doğrulama ve dinamik raporlama süreçlerini yöneten masaüstü mimarisi tasarlandı.",
+        ],
+      },
+    };
+
+    function openModal(key) {
+      const info = DETAILS[key];
+      if (!info) return;
+      if (yearEl) yearEl.textContent = info.year;
+      if (titleEl) titleEl.textContent = info.title;
+      if (stackEl) stackEl.textContent = info.stack;
+      if (listEl) {
+        listEl.innerHTML = "";
+        info.points.forEach((p) => {
+          const li = document.createElement("li");
+          li.textContent = p;
+          listEl.appendChild(li);
         });
       }
-    };
-  }
-
-  function initPreloader(playHeroTitle) {
-    const preloader = document.querySelector("[data-preloader]");
-    const countEl = document.querySelector("[data-preloader-count]");
-    const bar = document.querySelector("[data-preloader-bar]");
-
-    const playTitle =
-      typeof playHeroTitle === "function" ? playHeroTitle : () => {};
-
-    if (!preloader) {
-      document.documentElement.classList.remove("is-loading");
-      playTitle();
-      return;
+      modal.hidden = false;
     }
 
-    let value = -1;
-    let finished = false;
-    let loadWaitTimer = 0;
-
-    function setValue(next) {
-      const clamped = Math.max(0, Math.min(100, Math.round(next)));
-      if (clamped === value) return;
-
-      value = clamped;
-      if (countEl) countEl.textContent = String(clamped);
-      if (bar) bar.style.transform = `scaleX(${clamped / 100})`;
+    function closeModal() {
+      modal.hidden = true;
     }
 
-    function finish() {
-      if (finished) return;
-      finished = true;
-
-      window.clearTimeout(loadWaitTimer);
-      document.documentElement.classList.remove("is-loading");
-
-      preloader.classList.add("is-done");
-      playTitle();
-
-      const remove = () => {
-        if (preloader.isConnected) preloader.remove();
-      };
-
-      preloader.addEventListener("transitionend", (event) => {
-        if (event.target === preloader && event.propertyName === "transform") {
-          remove();
+    cards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const key = card.getAttribute("data-work-item");
+        if (key) openModal(key);
+      });
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          const key = card.getAttribute("data-work-item");
+          if (key) openModal(key);
         }
       });
+    });
 
-      // transitionend gelmezse (ör. reduced motion) temizle
-      window.setTimeout(remove, 1400);
-    }
-
-    // Sayaç bittiğinde sayfanın yüklenmesini bekle (en fazla 1,2 sn)
-    function whenLoaded() {
-      if (document.readyState === "complete") {
-        finish();
-        return;
-      }
-
-      window.addEventListener("load", finish, { once: true });
-      loadWaitTimer = window.setTimeout(finish, 1200);
-    }
-
-    if (reducedMotion.matches) {
-      setValue(100);
-      window.setTimeout(finish, 200);
-      return;
-    }
-
-    const DURATION = 1700;
-    let startTime = 0;
-
-    function tick(now) {
-      if (!startTime) startTime = now;
-
-      const progress = Math.min(1, (now - startTime) / DURATION);
-      // Sona yaklaştıkça yavaşlayan sayaç
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(eased * 100);
-
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-        return;
-      }
-
-      setValue(100);
-      whenLoaded();
-    }
-
-    requestAnimationFrame(tick);
+    closeBtns.forEach((btn) => btn.addEventListener("click", closeModal));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !modal.hidden) closeModal();
+    });
   }
 
-  const playHeroTitle = initHeroTitle();
-
-  // Preloader önce başlatılır: sonraki bir başlatma hata verse bile
-  // sayaç tamamlanıp perde kalkar.
-  initPreloader(playHeroTitle);
-
-  initMenu();
-  initSmoothScrolling();
   initSmoothScroll();
-  initScrollAnimations();
   initCustomCursor();
-  initProjectPreview();
+  initWorksAndWavyCanvases();
+  initProjectModal();
 })();
