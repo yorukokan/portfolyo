@@ -5,9 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Kişisel portfolyo sitesi">
   <title>Portfolyo</title>
+
+  <!-- Three.js (jsDelivr, ES modülü) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
+  <noscript>
+    <style>
+      .preloader {
+        display: none !important;
+      }
+    </style>
+  </noscript>
 </head>
 <body>
+
+  <div class="preloader" data-preloader aria-hidden="true">
+    <div class="preloader__inner">
+      <span class="preloader__count" data-preloader-count>0</span>
+      <div class="preloader__bar" aria-hidden="true">
+        <span class="preloader__bar-fill" data-preloader-bar></span>
+      </div>
+      <span class="preloader__label">Yükleniyor</span>
+    </div>
+  </div>
 
   <header class="header">
     <nav class="nav" aria-label="Ana menü">
@@ -21,10 +53,18 @@
     </nav>
   </header>
 
+  <section id="hero" class="hero" aria-label="Giriş">
+    <div class="hero__scene" data-hero-scene aria-hidden="true"></div>
+    <h1 class="hero__title" data-hero-title aria-label="Yazılım Geliştirici">
+      <span class="hero__line">Yazılım</span>
+      <span class="hero__line">Geliştirici</span>
+    </h1>
+  </section>
+
   <main>
 
     <section id="hakkimda" class="section">
-      <h1>Hakkımda</h1>
+      <h2>Hakkımda</h2>
       <p>
         Merhaba! Ben bir yazılım geliştiricisiyim. Web teknolojileriyle kullanıcı
         dostu arayüzler ve ölçeklenebilir uygulamalar geliştiriyorum.
@@ -51,31 +91,35 @@
 
     <section id="projeler" class="section">
       <h2>Projeler</h2>
-      <div class="projects">
-        <article class="project-card">
-          <h3 class="project-card__title">Proje Bir</h3>
-          <p class="project-card__text">
-            Kısa proje açıklaması. Kullanılan teknolojiler ve projenin amacı.
-          </p>
-          <a class="project-card__link" href="#">İncele</a>
-        </article>
 
-        <article class="project-card">
-          <h3 class="project-card__title">Proje İki</h3>
-          <p class="project-card__text">
-            Kısa proje açıklaması. Kullanılan teknolojiler ve projenin amacı.
-          </p>
-          <a class="project-card__link" href="#">İncele</a>
-        </article>
+      <ul class="project-list" data-project-list>
+        <li class="project-list__item">
+          <a class="project-row" href="#" data-project-row data-project="1">
+            <span class="project-row__index" aria-hidden="true">01</span>
+            <span class="project-row__title">Proje Bir</span>
+            <span class="project-row__meta">React · Node.js</span>
+            <span class="project-row__arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
 
-        <article class="project-card">
-          <h3 class="project-card__title">Proje Üç</h3>
-          <p class="project-card__text">
-            Kısa proje açıklaması. Kullanılan teknolojiler ve projenin amacı.
-          </p>
-          <a class="project-card__link" href="#">İncele</a>
-        </article>
-      </div>
+        <li class="project-list__item">
+          <a class="project-row" href="#" data-project-row data-project="2">
+            <span class="project-row__index" aria-hidden="true">02</span>
+            <span class="project-row__title">Proje İki</span>
+            <span class="project-row__meta">HTML · CSS · JS</span>
+            <span class="project-row__arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+
+        <li class="project-list__item">
+          <a class="project-row" href="#" data-project-row data-project="3">
+            <span class="project-row__index" aria-hidden="true">03</span>
+            <span class="project-row__title">Proje Üç</span>
+            <span class="project-row__meta">SQL · API</span>
+            <span class="project-row__arrow" aria-hidden="true">↗</span>
+          </a>
+        </li>
+      </ul>
     </section>
 
     <section id="iletisim" class="section">
@@ -108,6 +152,16 @@
     <p>&copy; 2026 Portfolyo. Tüm hakları saklıdır.</p>
   </footer>
 
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+
+  <!-- Lenis -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
+
   <script src="script.js" defer></script>
+
+  <!-- Three.js hero sahnesi (jsDelivr ES modülü) -->
+  <script type="module" src="hero3d.js"></script>
 </body>
 </html>
