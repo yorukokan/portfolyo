@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 920" width="1520" height="920">
+  <defs>
+    <linearGradient id="bgGradQt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1912"/>
+      <stop offset="45%" stop-color="#0C1018"/>
+      <stop offset="100%" stop-color="#11101E"/>
+    </linearGradient>
+    <radialGradient id="qtGlow" cx="18%" cy="16%" r="55%">
+      <stop offset="0%" stop-color="#41CD52" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#41CD52" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cyanGlow" cx="85%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cardGradQt" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#161C27" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#0F131B" stop-opacity="0.92"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Arka Plan -->
+  <rect width="1520" height="920" fill="url(#bgGradQt)"/>
+  <rect width="1520" height="920" fill="url(#qtGlow)"/>
+  <rect width="1520" height="920" fill="url(#cyanGlow)"/>
+
+  <!-- Üst Rozet -->
+  <rect x="64" y="68" width="410" height="54" rx="27" fill="#0E2016" stroke="#41CD52" stroke-opacity="0.45" stroke-width="1.5"/>
+  <text x="269" y="102" text-anchor="middle" fill="#4ADE80" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="20" font-weight="600" letter-spacing="3.2">QT &amp; C++ · SQLITE OTOMASYON</text>
+
+  <!-- Ana Başlık -->
+  <text x="64" y="218" fill="#F8FAFC" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="68" font-weight="700" letter-spacing="-1.5">İlişkisel envanter, ödünç</text>
+  <text x="64" y="302" fill="#F8FAFC" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="68" font-weight="700" letter-spacing="-1.5">ve gecikme otomasyonu.</text>
+
+  <!-- Alt Açıklama -->
+  <text x="64" y="378" fill="#94A3B8" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="25" font-weight="400">C++ OOP prensipleri, QSqlQueryModel canlı tablo senkronizasyonu ve SQLite</text>
+  <text x="64" y="418" fill="#94A3B8" font-family="Plus Jakarta Sans, Inter, sans-serif" font-size="25" font-weight="400">bütünlük kısıtlamalarıyla üye, kitap ve iade iş akışlarını yönetir.</text>
+
+  <!-- Sağ C++ Modül Mimarisi Diyagramı -->
+  <rect x="980" y="68" width="476" height="410" rx="24" fill="#121722" stroke="#334155" stroke-opacity="0.55" stroke-width="1.5"/>
+  <text x="1016" y="114" fill="#4ADE80" font-family="Space Grotesk, monospace" font-size="17" font-weight="600" letter-spacing="2">C++ &amp; QT MODÜL MİMARİSİ</text>
+
+  <rect x="1016" y="136" width="404" height="64" rx="12" fill="#192332" stroke="#41CD52" stroke-opacity="0.4" stroke-width="1.2"/>
+  <text x="1038" y="165" fill="#4ADE80" font-family="Space Grotesk, monospace" font-size="16" font-weight="600">mainwindow.cpp</text>
+  <text x="1038" y="187" fill="#CBD5E1" font-family="Plus Jakarta Sans, sans-serif" font-size="14">Merkezi Navigasyon · Otomatik SQLite Handshake</text>
+
+  <rect x="1016" y="214" width="194" height="106" rx="12" fill="#18202E" stroke="#38BDF8" stroke-opacity="0.35" stroke-width="1.2"/>
+  <text x="1034" y="244" fill="#38BDF8" font-family="Space Grotesk, monospace" font-size="15" font-weight="600">islemleruye.cpp</text>
+  <text x="1034" y="270" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5">Üye CRUD &amp; İade</text>
+  <text x="1034" y="292" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5">Borcu Silme Koruması</text>
+
+  <rect x="1226" y="214" width="194" height="106" rx="12" fill="#18202E" stroke="#38BDF8" stroke-opacity="0.35" stroke-width="1.2"/>
+  <text x="1244" y="244" fill="#38BDF8" font-family="Space Grotesk, monospace" font-size="15" font-weight="600">islemlerkitap.cpp</text>
+  <text x="1244" y="270" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5">Envanter &amp; Ödünçteki</text>
+  <text x="1244" y="292" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="13.5">Kitap Silme Engeli</text>
+
+  <rect x="1016" y="334" width="404" height="114" rx="12" fill="#171D2A" stroke="#A78BFA" stroke-opacity="0.38" stroke-width="1.2"/>
+  <text x="1038" y="366" fill="#A78BFA" font-family="Space Grotesk, monospace" font-size="15.5" font-weight="600">islemleroduncalma.cpp / teslim.cpp</text>
+  <text x="1038" y="394" fill="#CBD5E1" font-family="Plus Jakarta Sans, sans-serif" font-size="14.5">· Otomatik Stok Düşürme / Artırma Senkronizasyonu</text>
+  <text x="1038" y="420" fill="#CBD5E1" font-family="Plus Jakarta Sans, sans-serif" font-size="14.5">· 15 Gün Limit Aşımında Otomatik Gecikme Cezası</text>
+
+  <!-- Alt 3 Modül Kartı (01, 02, 03) -->
+  <rect x="64" y="544" width="436" height="308" rx="26" fill="url(#cardGradQt)" stroke="#334155" stroke-opacity="0.5" stroke-width="1.5"/>
+  <text x="106" y="632" fill="#4ADE80" font-family="Plus Jakarta Sans, sans-serif" font-size="52" font-weight="700">01</text>
+  <text x="106" y="696" fill="#F8FAFC" font-family="Plus Jakarta Sans, sans-serif" font-size="29" font-weight="700">Canlı Tablo Senkronu</text>
+  <text x="106" y="744" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="22">QSqlQueryModel ile SQLite veritabanı</text>
+  <text x="106" y="778" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="22">değişikliklerini anında arayüze yansıtır.</text>
+
+  <rect x="542" y="544" width="436" height="308" rx="26" fill="url(#cardGradQt)" stroke="#334155" stroke-opacity="0.5" stroke-width="1.5"/>
+  <text x="584" y="632" fill="#38BDF8" font-family="Plus Jakarta Sans, sans-serif" font-size="52" font-weight="700">02</text>
+  <text x="584" y="696" fill="#F8FAFC" font-family="Plus Jakarta Sans, sans-serif" font-size="29" font-weight="700">İlişkisel Bütünlük</text>
+  <text x="584" y="744" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="22">Ödünçteki kitapların veya teslim etmemiş</text>
+  <text x="584" y="778" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="22">üyelerin silinmesini otomatik engeller.</text>
+
+  <rect x="1020" y="544" width="436" height="308" rx="26" fill="url(#cardGradQt)" stroke="#334155" stroke-opacity="0.5" stroke-width="1.5"/>
+  <text x="1062" y="632" fill="#A78BFA" font-family="Plus Jakarta Sans, sans-serif" font-size="52" font-weight="700">03</text>
+  <text x="1062" y="696" fill="#F8FAFC" font-family="Plus Jakarta Sans, sans-serif" font-size="29" font-weight="700">15 Gün Ceza Motoru</text>
+  <text x="1062" y="744" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="22">İade süresini aşan işlemler için gecikme</text>
+  <text x="1062" y="778" fill="#94A3B8" font-family="Plus Jakarta Sans, sans-serif" font-size="22">tutarını ve stok durumunu hesaplar.</text>
+</svg>
