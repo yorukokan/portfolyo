@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Okan Yörük — Software & Systems Engineer. Türksat A.Ş. Sistem ve Ağ Yönetimi, Finansal Dağıtım Motorları, Yapay Görme ve Çapraz Platform Yazılım Mimarisi.">
+  <meta name="description" content="Okan Yörük — Software & Systems Engineer. Türksat A.Ş. Sistem ve Ağ Yönetimi, FinTech Halka Arz Mimarisi (Next.js & Supabase), Yapay Görme (PyTorch CNN & FastAPI) ve Çapraz Platform Uygulamalar.">
   <title>Okan Yörük | Software &amp; Systems Engineer</title>
 
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Plus Jakarta Sans (Ana Gövde & Başlık) + Space Grotesk (Teknik & Sayısal Vurgu) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -20,18 +20,18 @@
     <canvas id="particle-canvas"></canvas>
   </div>
 
-  <!-- Özel İmleç: Parlayan Beyaz Nokta + Hover'da İnce Çember (Ekran Görüntüsü 4..23) -->
+  <!-- Özel İmleç: Parlayan Beyaz Nokta + Hover'da İnce Çember -->
   <div class="custom-cursor" data-cursor aria-hidden="true">
     <div class="custom-cursor__dot"></div>
     <div class="custom-cursor__ring"></div>
   </div>
 
   <!-- ======================================================================
-       KAYDIRMA GÜDÜMLÜ SAHNE KATMANLARI (Ekran Görüntüsü 4 -> 23)
+       KAYDIRMA GÜDÜMLÜ SAHNE KATMANLARI (Sahneler 0 -> 7)
        ====================================================================== -->
   <main class="scroll-container" id="scroll-container">
 
-    <!-- SAHNE 0 (Ekran Görüntüsü 4): Merkezde Partikül Portre Silüeti, Solda İsim, Sağda Unvan -->
+    <!-- SAHNE 0: Merkezde Partikül Portre Silüeti, Solda İsim, Sağda Unvan -->
     <section class="scene scene--hero" data-scene="0">
       <div class="hero-split">
         <h1 class="hero-split__left">Okan Yörük</h1>
@@ -39,54 +39,61 @@
       </div>
     </section>
 
-    <!-- SAHNE 1 (Ekran Görüntüsü 5): Portre Silüeti Sağa Kayar, Solda 3 Satırlık Tanıtım Yazısı Belirir -->
+    <!-- SAHNE 1: Portre Silüeti Sağa Kayar, Solda Boşlukta Tanıtım Yazısı Belirir -->
     <section class="scene scene--intro" data-scene="1">
       <div class="intro-block" data-fade-block="intro">
         <p class="statement-text">
-          Karmaşık sistemleri ve iddialı fikirleri hızlı, güvenilir ve etkileşimli deneyimlere dönüştürüyorum. Kurumsal ağ, arka yüz, yapay görme - uçtan uca yazılım ve sistem mimarisi.
+          Karmaşık sistemleri ve iddialı fikirleri hızlı, güvenilir ve etkileşimli deneyimlere dönüştürüyorum. Kurumsal ağ, full-stack mimari, yapay görme — uçtan uca mühendislik.
         </p>
       </div>
     </section>
 
-    <!-- SAHNE 2 (Ekran Görüntüsü 6, 7, 8): Yatay Dilimlenerek Küreye Dönüşüm + Küre Etrafında Dönen Kavisli Yazı -->
+    <!-- SAHNE 2: Küre Etrafında Dış Çemberde Dönen Kavisli Yazı (Partikül Kürenin Dışında) -->
     <section class="scene scene--globe" data-scene="2">
       <div class="globe-orbit" data-fade-block="globe" aria-hidden="true">
         <svg class="globe-orbit__svg" viewBox="0 0 600 600">
           <defs>
-            <path id="orbit-top" d="M 300, 300 m -232, 0 a 232,232 0 1,1 464,0 a 232,232 0 1,1 -464,0" />
+            <!-- Yarıçap 268: 58.4vh'lik partikül küresinin tam dış çeperinde döner -->
+            <path id="orbit-ring" d="M 300, 300 m -268, 0 a 268,268 0 1,1 536,0 a 268,268 0 1,1 -536,0" />
           </defs>
           <text class="globe-orbit__text">
-            <textPath href="#orbit-top" startOffset="12%">
-              Türksat A.Ş. · Sistem ve Ağ
+            <textPath href="#orbit-ring" startOffset="9%">
+              Türksat A.Ş. · Sistem ve Ağ Yönetimi
             </textPath>
           </text>
           <text class="globe-orbit__text">
-            <textPath href="#orbit-top" startOffset="62%">
-              Uçtan uca yazılım mimarisi
+            <textPath href="#orbit-ring" startOffset="59%">
+              Full-Stack &amp; AI Mühendisliği
             </textPath>
           </text>
         </svg>
       </div>
     </section>
 
-    <!-- SAHNE 3 (Ekran Görüntüsü 9, 10, 11): Küre Dilimlenerek Türkiye Haritası Partikül Silüetine Dönüşür -->
+    <!-- SAHNE 3: Türkiye Haritası Partikül Silüeti + Haritanın Üst Sağ Boşluğunda Konum İşareti -->
     <section class="scene scene--map" data-scene="3">
       <div class="map-pin" data-fade-block="map">
-        <span class="map-pin__label">Based in Türkiye</span>
-        <span class="map-pin__sub">Ankara &amp; Konya</span>
+        <div class="map-pin__card">
+          <span class="map-pin__label">Based in Türkiye</span>
+          <span class="map-pin__sub">Ankara &amp; Konya</span>
+        </div>
+        <div class="map-pin__stem" aria-hidden="true">
+          <span class="map-pin__line"></span>
+          <span class="map-pin__dot"></span>
+        </div>
       </div>
     </section>
 
-    <!-- SAHNE 4 (Ekran Görüntüsü 12, 13): Diyagonal DNA/Dalga Şeridi + Sağ Altta Felsefe Metni -->
+    <!-- SAHNE 4: Diyagonal DNA/Dalga Şeridi + Sağ Altta Felsefe Metni -->
     <section class="scene scene--philosophy" data-scene="4">
       <div class="philosophy-block" data-fade-block="philosophy">
         <p class="statement-text">
-          Yalnızca bana teslim edilen işi kodlamıyorum - kurumsal ağ güvenliğinden ilişkisel veri tabanına, derin öğrenme modellerinden arayüz akışına kadar işi gerçekten yükseltecek her noktaya kendi mühendislik içgüdümü katıyorum.
+          Yalnızca bana teslim edilen işi kodlamıyorum — kurumsal ağ güvenliğinden ilişkisel veri tabanına, derin öğrenme modellerinden arayüz akışına kadar işi gerçekten yükseltecek her noktaya kendi mühendislik içgüdümü katıyorum.
         </p>
       </div>
     </section>
 
-    <!-- SAHNE 5 (Ekran Görüntüsü 14, 15, 16, 17): SOME SELECTED WORKS — Yatay Kaydırılan Dalgalı (Wavy) Proje Vitrinleri -->
+    <!-- SAHNE 5: SOME SELECTED WORKS — GitHub Analizli Yatay Kaydırılan Dalgalı Proje Vitrinleri -->
     <section class="scene scene--works" id="selected-works" data-scene="5">
       <div class="works-sticky">
         <div class="works-header">
@@ -96,58 +103,211 @@
         <div class="works-track-wrap">
           <div class="works-track" data-works-track>
 
-            <!-- Proje 1: Çoklu Portföy & Halka Arz (2026) -->
-            <article class="wavy-work" data-work-item="ipo" tabindex="0" role="button" aria-label="Çoklu Portföy ve Halka Arz Talep Yönetim Sistemi detaylarını aç">
-              <div class="wavy-work__media">
-                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="ipo" data-img-src="assets/projects/coklu-portfoy-halka-arz.png"></canvas>
-              </div>
+            <!-- Proje 1: IPO Finance Tracker (Next.js 16 + Supabase + Vercel) -->
+            <article class="wavy-work" data-work-item="ipo">
+              <a
+                class="wavy-work__link"
+                href="https://github.com/yorukokan/ipo-finance-tracker"
+                target="_blank"
+                rel="noopener"
+                data-cursor-ring
+                aria-label="IPO Finance Tracker GitHub reposunu aç"
+              >
+                <div class="wavy-work__media">
+                  <canvas
+                    class="wavy-canvas"
+                    width="760"
+                    height="460"
+                    data-wavy-canvas="ipo"
+                    data-img-src="assets/projects/ipo-finance-tracker.png"
+                  ></canvas>
+                </div>
+              </a>
               <div class="wavy-work__meta">
-                <h2 class="wavy-work__title">Çoklu Portföy &amp; Halka Arz</h2>
-                <span class="wavy-work__year">2026</span>
+                <div class="wavy-work__info">
+                  <h2 class="wavy-work__title">
+                    <a href="https://github.com/yorukokan/ipo-finance-tracker" target="_blank" rel="noopener" data-cursor-ring>
+                      IPO Finance Tracker
+                    </a>
+                  </h2>
+                  <p class="wavy-work__stack">Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · Supabase</p>
+                </div>
+                <div class="wavy-work__actions">
+                  <a
+                    class="wavy-work__pill"
+                    href="https://arz-finans-takip.vercel.app/"
+                    target="_blank"
+                    rel="noopener"
+                    data-cursor-ring
+                  >Canlı Demo ↗</a>
+                  <button class="wavy-work__pill" type="button" data-open-detail="ipo" data-cursor-ring>Detay</button>
+                  <span class="wavy-work__year">2026</span>
+                </div>
               </div>
             </article>
 
-            <!-- Proje 2: CNN Duygu Durumu Analizi (2026) -->
-            <article class="wavy-work" data-work-item="emotion" tabindex="0" role="button" aria-label="Duygu Durumu Analizi ile Kişiselleştirilmiş Öneri Uygulaması detaylarını aç">
-              <div class="wavy-work__media">
-                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="emotion" data-img-src="assets/projects/duygu-durumu-oneri.png"></canvas>
-              </div>
+            <!-- Proje 2: AI-Powered Mood Analysis & Personalized Recommendation (Flutter + FastAPI + PyTorch) -->
+            <article class="wavy-work" data-work-item="emotion">
+              <a
+                class="wavy-work__link"
+                href="https://github.com/yorukokan/ai-powered-mood-analysis-personalized-nutrition-activity-recommendation"
+                target="_blank"
+                rel="noopener"
+                data-cursor-ring
+                aria-label="AI Mood Analysis & Recommendation GitHub reposunu aç"
+              >
+                <div class="wavy-work__media">
+                  <canvas
+                    class="wavy-canvas"
+                    width="760"
+                    height="460"
+                    data-wavy-canvas="emotion"
+                    data-img-src="assets/projects/ai-mood-recommendation.png"
+                  ></canvas>
+                </div>
+              </a>
               <div class="wavy-work__meta">
-                <h2 class="wavy-work__title">CNN Duygu Durumu Analizi</h2>
-                <span class="wavy-work__year">2026</span>
+                <div class="wavy-work__info">
+                  <h2 class="wavy-work__title">
+                    <a href="https://github.com/yorukokan/ai-powered-mood-analysis-personalized-nutrition-activity-recommendation" target="_blank" rel="noopener" data-cursor-ring>
+                      AI Mood &amp; Nutrition Recommender
+                    </a>
+                  </h2>
+                  <p class="wavy-work__stack">Flutter · FastAPI · PyTorch CNN (FER-2013) · OpenCV · PostgreSQL</p>
+                </div>
+                <div class="wavy-work__actions">
+                  <a
+                    class="wavy-work__pill"
+                    href="https://github.com/yorukokan/ai-powered-mood-analysis-personalized-nutrition-activity-recommendation"
+                    target="_blank"
+                    rel="noopener"
+                    data-cursor-ring
+                  >GitHub ↗</a>
+                  <button class="wavy-work__pill" type="button" data-open-detail="emotion" data-cursor-ring>Detay</button>
+                  <span class="wavy-work__year">2026</span>
+                </div>
               </div>
             </article>
 
-            <!-- Proje 3: Bookan Sosyal Kitap Platformu (2025) -->
-            <article class="wavy-work" data-work-item="bookan" tabindex="0" role="button" aria-label="Bookan Sosyal Kitap Keşif Platformu detaylarını aç">
-              <div class="wavy-work__media">
-                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="bookan" data-img-src="assets/projects/bookan-platform.png"></canvas>
-              </div>
+            <!-- Proje 3: Bookan Sosyal Kitap Keşif Ekosistemi (Mobil & Web) -->
+            <article class="wavy-work" data-work-item="bookan">
+              <a
+                class="wavy-work__link"
+                href="https://github.com/yorukokan/bookan-mobile-app"
+                target="_blank"
+                rel="noopener"
+                data-cursor-ring
+                aria-label="Bookan Mobile App GitHub reposunu aç"
+              >
+                <div class="wavy-work__media">
+                  <canvas
+                    class="wavy-canvas"
+                    width="760"
+                    height="460"
+                    data-wavy-canvas="bookan"
+                    data-img-src="assets/projects/bookan-platform.svg"
+                  ></canvas>
+                </div>
+              </a>
               <div class="wavy-work__meta">
-                <h2 class="wavy-work__title">Bookan Kitap Platformu</h2>
-                <span class="wavy-work__year">2025</span>
+                <div class="wavy-work__info">
+                  <h2 class="wavy-work__title">
+                    <a href="https://github.com/yorukokan/bookan-mobile-app" target="_blank" rel="noopener" data-cursor-ring>
+                      Bookan — Sosyal Kitap Ekosistemi
+                    </a>
+                  </h2>
+                  <p class="wavy-work__stack">Flutter &amp; Dart · Cloud Firestore · Google Books API · PHP 8 &amp; MySQL</p>
+                </div>
+                <div class="wavy-work__actions">
+                  <a
+                    class="wavy-work__pill"
+                    href="https://github.com/yorukokan/bookan-web-app"
+                    target="_blank"
+                    rel="noopener"
+                    data-cursor-ring
+                  >Web Repo ↗</a>
+                  <button class="wavy-work__pill" type="button" data-open-detail="bookan" data-cursor-ring>Detay</button>
+                  <span class="wavy-work__year">2025</span>
+                </div>
               </div>
             </article>
 
-            <!-- Proje 4: Türksat A.Ş. Sistem ve Ağ Yönetimi (2026) -->
-            <article class="wavy-work" data-work-item="turksat" tabindex="0" role="button" aria-label="Türksat A.Ş. Sistem ve Ağ Yönetimi deneyimi detaylarını aç">
-              <div class="wavy-work__media">
-                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="turksat" data-img-src="assets/projects/turksat-sistem-ag.png"></canvas>
-              </div>
+            <!-- Proje 4: Library Management System (Qt & C++ & SQLite) -->
+            <article class="wavy-work" data-work-item="library">
+              <a
+                class="wavy-work__link"
+                href="https://github.com/yorukokan/library-management-system-Qt"
+                target="_blank"
+                rel="noopener"
+                data-cursor-ring
+                aria-label="Library Management System Qt GitHub reposunu aç"
+              >
+                <div class="wavy-work__media">
+                  <canvas
+                    class="wavy-canvas"
+                    width="760"
+                    height="460"
+                    data-wavy-canvas="library"
+                    data-img-src="assets/projects/library-management-qt.svg"
+                  ></canvas>
+                </div>
+              </a>
               <div class="wavy-work__meta">
-                <h2 class="wavy-work__title">Türksat A.Ş. — Sistem &amp; Ağ</h2>
-                <span class="wavy-work__year">2026</span>
+                <div class="wavy-work__info">
+                  <h2 class="wavy-work__title">
+                    <a href="https://github.com/yorukokan/library-management-system-Qt" target="_blank" rel="noopener" data-cursor-ring>
+                      Library Management — Qt &amp; C++
+                    </a>
+                  </h2>
+                  <p class="wavy-work__stack">C++ · Qt Widgets · QSqlQueryModel · SQLite · OOP Mimarisi</p>
+                </div>
+                <div class="wavy-work__actions">
+                  <a
+                    class="wavy-work__pill"
+                    href="https://github.com/yorukokan/library-management-system-Qt"
+                    target="_blank"
+                    rel="noopener"
+                    data-cursor-ring
+                  >GitHub ↗</a>
+                  <button class="wavy-work__pill" type="button" data-open-detail="library" data-cursor-ring>Detay</button>
+                  <span class="wavy-work__year">2025</span>
+                </div>
               </div>
             </article>
 
-            <!-- Proje 5: TCP/UDP Soket & Qt C++ Otomasyon (2025) -->
-            <article class="wavy-work" data-work-item="systems" tabindex="0" role="button" aria-label="TCP/UDP Soket Mimarisi ve Qt C++ Envanter Sistemi detaylarını aç">
-              <div class="wavy-work__media">
-                <canvas class="wavy-canvas" width="760" height="460" data-wavy-canvas="systems" data-img-src="assets/projects/tcp-udp-soket-analizi.png"></canvas>
-              </div>
+            <!-- Proje 5: Türksat A.Ş. Sistem ve Ağ Yönetimi (2026) -->
+            <article class="wavy-work" data-work-item="turksat">
+              <a
+                class="wavy-work__link"
+                href="https://github.com/yorukokan/yorukokan"
+                target="_blank"
+                rel="noopener"
+                data-cursor-ring
+                aria-label="Türksat A.Ş. Sistem ve Ağ Yönetimi profilini aç"
+              >
+                <div class="wavy-work__media">
+                  <canvas
+                    class="wavy-canvas"
+                    width="760"
+                    height="460"
+                    data-wavy-canvas="turksat"
+                    data-img-src="assets/projects/turksat-sistem-ag.svg"
+                  ></canvas>
+                </div>
+              </a>
               <div class="wavy-work__meta">
-                <h2 class="wavy-work__title">TCP/UDP Soket &amp; Qt C++</h2>
-                <span class="wavy-work__year">2025</span>
+                <div class="wavy-work__info">
+                  <h2 class="wavy-work__title">
+                    <a href="https://github.com/yorukokan/yorukokan" target="_blank" rel="noopener" data-cursor-ring>
+                      Türksat A.Ş. — Sistem &amp; Ağ
+                    </a>
+                  </h2>
+                  <p class="wavy-work__stack">Active Directory (AD DS) · DNS / DHCP / GPO · RBAC &amp; PoLP · Linux &amp; Windows Server</p>
+                </div>
+                <div class="wavy-work__actions">
+                  <button class="wavy-work__pill" type="button" data-open-detail="turksat" data-cursor-ring>Detay</button>
+                  <span class="wavy-work__year">2026</span>
+                </div>
               </div>
             </article>
 
@@ -156,7 +316,7 @@
       </div>
     </section>
 
-    <!-- SAHNE 6 (Ekran Görüntüsü 18, 19, 20): Sarmal Yay -> Dönen Galaksi Girdabı + "And still working on plenty more." -->
+    <!-- SAHNE 6: Dönen Galaksi Girdabı (Sağda) + Solda Boşlukta Metin -->
     <section class="scene scene--more" data-scene="6">
       <div class="more-block" data-fade-block="more">
         <p class="statement-text">
@@ -168,7 +328,7 @@
       </div>
     </section>
 
-    <!-- SAHNE 7 (Ekran Görüntüsü 21, 22, 23): Partikül Dikdörtgen Çerçeve + GET IN TOUCH + Altbilgi -->
+    <!-- SAHNE 7: Geniş Partikül Dikdörtgen Çerçeve + Tam İçine Oturan E-Posta & Altbilgi -->
     <section class="scene scene--contact" data-scene="7">
       <div class="contact-center" data-fade-block="contact">
         <span class="contact-eyebrow">GET IN TOUCH</span>
@@ -200,7 +360,7 @@
 
   </main>
 
-  <!-- Proje Kartına Tıklandığında Açılan Minimal Detay Çekmecesi -->
+  <!-- Proje "Detay" Butonuna Tıklandığında Açılan Mimari İnceleme Çekmecesi -->
   <div class="project-modal" data-project-modal hidden aria-modal="true" role="dialog" aria-labelledby="modal-title">
     <div class="project-modal__backdrop" data-modal-close></div>
     <div class="project-modal__dialog">
@@ -208,19 +368,20 @@
         <span class="project-modal__year" data-modal-year>2026</span>
         <button class="project-modal__close" type="button" data-modal-close data-cursor-ring>Kapat ✕</button>
       </div>
-      <h3 class="project-modal__title" id="modal-title" data-modal-title>Çoklu Portföy &amp; Halka Arz</h3>
-      <p class="project-modal__stack" data-modal-stack>Node.js · Express.js · Supabase · PostgreSQL · REST API</p>
+      <h3 class="project-modal__title" id="modal-title" data-modal-title>IPO Finance Tracker</h3>
+      <p class="project-modal__stack" data-modal-stack>Next.js 16 · React 19 · TypeScript · Supabase · PostgreSQL</p>
       <ul class="project-modal__list" data-modal-list></ul>
+      <div class="project-modal__links" data-modal-links></div>
     </div>
   </div>
 
-  <!-- Portre Veri Kaynağı (file:// ve http:// üzerinde CORS hatasız çalışır) -->
+  <!-- Portre Veri Kaynağı -->
   <script src="portrait-data.js" defer></script>
 
   <!-- Sıfır Bağımlılıklı WebGL + 2D Fallback 8 Evreli Partikül Motoru -->
   <script src="particles3d.js" defer></script>
 
-  <!-- Lenis Smooth Scroll (Opsiyonel CDN) -->
+  <!-- Lenis Smooth Scroll -->
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
 
   <!-- Arayüz, Dalgalı Proje Kanvasları ve Scroll Koreografisi -->

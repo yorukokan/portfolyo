@@ -1,13 +1,15 @@
 /* ==========================================================================
    Okan Yörük — Minimalist Particle Metamorphosis Portfolio
-   Exact Visual Calibration to ingrassiadaniel.it (Screenshots 4-23)
+   Typography: Plus Jakarta Sans + Space Grotesk
+   Calibrated Scene Geometry: Zero Particle-Text Collisions
    ========================================================================== */
 
 :root {
   --bg: #27262B;
-  --text: #F0F2F0;
-  --muted: #8E8E95;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --text: #F2F4F3;
+  --muted: #94949E;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
 }
 
 *,
@@ -22,6 +24,7 @@ html {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -72,7 +75,7 @@ button {
 }
 
 /* ==========================================================================
-   Özel İmleç (Ekran Görüntüsü 4..23: Parlayan Beyaz Nokta & Hover Çemberi)
+   Özel İmleç (Parlayan Beyaz Nokta & Hover Çemberi)
    ========================================================================== */
 
 .custom-cursor {
@@ -111,7 +114,7 @@ button {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(240, 242, 240, 0.88);
+  border: 1px solid rgba(242, 244, 243, 0.88);
   transform: translate(-50%, -50%) scale(0.25);
   opacity: 0;
   transition:
@@ -144,10 +147,10 @@ button {
   min-height: 115vh;
   display: flex;
   align-items: center;
-  padding-inline: clamp(2rem, 5vw, 5.25rem);
+  padding-inline: clamp(2.25rem, 5.5vw, 6rem);
 }
 
-/* SAHNE 0 (Ekran Görüntüsü 4): Solda Okan Yörük, Sağda Unvan */
+/* SAHNE 0: Solda Okan Yörük, Sağda Unvan — Portre Merkezde Temiz Boşlukta */
 .scene--hero {
   min-height: 100vh;
 }
@@ -158,52 +161,59 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  transform: translateY(1.5vh);
+  transform: translateY(1vh);
 }
 
 .hero-split__left,
 .hero-split__right {
   margin: 0;
-  font-size: clamp(1.25rem, 1.65vw, 1.6rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.2rem, 1.55vw, 1.52rem);
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.022em;
   color: var(--text);
+  text-shadow: 0 2px 18px rgba(39, 38, 43, 0.85);
 }
 
-/* SAHNE 1 (Ekran Görüntüsü 5): Solda 3 Satırlık Tanıtım Metni */
+/* SAHNE 1: Solda Tanıtım Metni (Portre sağ yarıya xShift=0.88 ile kaydırıldı) */
 .scene--intro {
   min-height: 135vh;
   align-items: center;
 }
 
 .intro-block {
-  max-width: 630px;
+  max-width: min(40vw, 520px);
 }
 
 .statement-text {
   margin: 0;
-  font-size: clamp(1.35rem, 2.05vw, 1.95rem);
-  font-weight: 400;
-  line-height: 1.32;
-  letter-spacing: -0.025em;
+  font-family: var(--font-sans);
+  font-size: clamp(1.28rem, 1.85vw, 1.78rem);
+  font-weight: 300;
+  line-height: 1.38;
+  letter-spacing: -0.022em;
   color: var(--text);
+  text-shadow: 0 2px 24px rgba(39, 38, 43, 0.92);
 }
 
 .statement-sub {
-  margin: 0.9rem 0 0;
-  font-size: 0.95rem;
+  margin: 0.95rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--muted);
 }
 
-/* SAHNE 2 (Ekran Görüntüsü 8): Küre Etrafında Kavisli Yazı */
+/* SAHNE 2: Küre Etrafında Kavisli Yazı
+   WebGL küre çapı 58.4vh; SVG çemberi (r=268/300 * 72vh = 64.3vh) kürenin tam dış çeperinde döner! */
 .scene--globe {
   min-height: 145vh;
   justify-content: center;
 }
 
 .globe-orbit {
-  width: min(76vw, 560px);
-  height: min(76vw, 560px);
+  width: min(86vw, 72vh);
+  height: min(86vw, 72vh);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,15 +224,15 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
-  animation: slowOrbitRotate 42s linear infinite;
+  animation: slowOrbitRotate 44s linear infinite;
 }
 
 .globe-orbit__text {
   fill: var(--text);
   font-family: var(--font-sans);
-  font-size: 18.5px;
+  font-size: 15.5px;
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
 }
 
 @keyframes slowOrbitRotate {
@@ -234,7 +244,7 @@ button {
   }
 }
 
-/* SAHNE 3 (Ekran Görüntüsü 11): Türkiye Haritası Üzerinde "Based in Türkiye" */
+/* SAHNE 3: Türkiye Haritası — Yazı Haritanın Üst Sağ Boşluğunda + İnce İşaretçi Çizgi */
 .scene--map {
   min-height: 145vh;
   justify-content: center;
@@ -243,36 +253,72 @@ button {
 .map-pin {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  transform: translate(3.5vw, -2vh);
+  align-items: flex-start;
+  transform: translate(14vw, -22vh);
   pointer-events: none;
 }
 
+.map-pin__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(39, 38, 43, 0.65);
+  backdrop-filter: blur(4px);
+}
+
 .map-pin__label {
-  font-size: clamp(1.35rem, 1.9vw, 1.75rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.3rem, 1.75vw, 1.65rem);
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.022em;
   color: var(--text);
 }
 
 .map-pin__sub {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 400;
   color: var(--muted);
 }
 
-/* SAHNE 4 (Ekran Görüntüsü 13): Sağ Altta Mühendislik Felsefesi Metni */
+.map-pin__stem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 1.1rem;
+  margin-top: 0.25rem;
+}
+
+.map-pin__line {
+  width: 1px;
+  height: 7.5vh;
+  background: linear-gradient(to bottom, rgba(242, 244, 243, 0.55), rgba(242, 244, 243, 0.95));
+}
+
+.map-pin__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow:
+    0 0 10px 3px rgba(255, 255, 255, 0.85),
+    0 0 22px 6px rgba(255, 255, 255, 0.35);
+}
+
+/* SAHNE 4: Sağ Altta Mühendislik Felsefesi Metni (DNA şeridinin tam altında temiz alanda) */
 .scene--philosophy {
   min-height: 140vh;
   justify-content: flex-end;
 }
 
 .philosophy-block {
-  max-width: 620px;
-  margin-right: clamp(0rem, 3vw, 4rem);
-  transform: translateY(4vh);
+  max-width: min(44vw, 550px);
+  margin-right: clamp(0rem, 2.5vw, 3rem);
+  transform: translateY(15vh);
 }
 
-/* SAHNE 5 (Ekran Görüntüsü 14-17): SOME SELECTED WORKS — Yatay Kaydırma */
+/* SAHNE 5: SOME SELECTED WORKS — Yatay Kaydırma */
 .scene--works {
   min-height: 360vh;
   padding-inline: 0;
@@ -293,14 +339,15 @@ button {
 .works-header {
   position: absolute;
   top: clamp(2.5rem, 6vh, 4.5rem);
-  left: clamp(2rem, 5vw, 5.25rem);
+  left: clamp(2.25rem, 5.5vw, 6rem);
   z-index: 5;
 }
 
 .works-eyebrow {
-  font-size: 0.78rem;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
   font-weight: 400;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -313,17 +360,21 @@ button {
 .works-track {
   display: flex;
   align-items: center;
-  gap: clamp(4rem, 9vw, 8.5rem);
-  padding-left: clamp(3rem, 9vw, 9rem);
-  padding-right: 20vw;
+  gap: clamp(4rem, 8.5vw, 8rem);
+  padding-left: clamp(3rem, 8.5vw, 8.5rem);
+  padding-right: 22vw;
   will-change: transform;
 }
 
 .wavy-work {
   flex: 0 0 auto;
-  width: min(82vw, 760px);
+  width: min(82vw, 740px);
   user-select: none;
   outline: none;
+}
+
+.wavy-work__link {
+  display: block;
 }
 
 .wavy-work__media {
@@ -340,37 +391,82 @@ button {
 
 .wavy-work__meta {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 0.85rem;
-  padding-inline: 0.35rem;
+  margin-top: 0.9rem;
+  padding-inline: 0.4rem;
+}
+
+.wavy-work__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
 }
 
 .wavy-work__title {
   margin: 0;
-  font-size: clamp(1.3rem, 1.8vw, 1.65rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.22rem, 1.65vw, 1.52rem);
   font-weight: 400;
   letter-spacing: -0.02em;
   color: var(--text);
 }
 
-.wavy-work__year {
-  font-size: 0.95rem;
+.wavy-work__title a:hover {
+  opacity: 0.82;
+}
+
+.wavy-work__stack {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 400;
   color: var(--muted);
 }
 
-/* SAHNE 6 (Ekran Görüntüsü 18, 19, 20): "And still working on plenty more." */
+.wavy-work__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.wavy-work__pill {
+  padding: 0.3rem 0.68rem;
+  border-radius: 999px;
+  border: 1px solid rgba(242, 244, 243, 0.22);
+  background: rgba(39, 38, 43, 0.72);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.wavy-work__pill:hover {
+  border-color: rgba(242, 244, 243, 0.65);
+  background: rgba(242, 244, 243, 0.1);
+}
+
+.wavy-work__year {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin-left: 0.2rem;
+}
+
+/* SAHNE 6: "And still working on plenty more." (Girdap sağa xShift=0.34 kaydırıldı, yazı solda temiz alanda) */
 .scene--more {
   min-height: 150vh;
   align-items: center;
 }
 
 .more-block {
-  max-width: 520px;
+  max-width: min(33vw, 410px);
 }
 
-/* SAHNE 7 (Ekran Görüntüsü 21, 22, 23): Partikül Dikdörtgen Çerçeve & İletişim */
+/* SAHNE 7: Geniş Partikül Dikdörtgen Çerçeve & Tam İçine Oturan E-Posta */
 .scene--contact {
   min-height: 105vh;
   flex-direction: column;
@@ -380,36 +476,41 @@ button {
 }
 
 .contact-center {
+  width: min(62vw, 760px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  padding: 2.5rem 2rem;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
 }
 
 .contact-eyebrow {
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .contact-email {
-  font-size: clamp(1.85rem, 4.8vw, 4.4rem);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
+  font-family: var(--font-sans);
+  font-size: clamp(1.15rem, 2.55vw, 2.65rem);
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  white-space: nowrap;
   color: var(--text);
   transition: opacity 0.2s ease;
 }
 
 .contact-email:hover {
-  opacity: 0.85;
+  opacity: 0.82;
 }
 
 .contact-sub {
-  margin: 0.25rem 0 0;
-  font-size: 0.95rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
@@ -422,19 +523,20 @@ button {
   opacity: 0.75;
 }
 
-/* En Alt Köşe Bilgileri (Ekran Görüntüsü 22 & 23) */
+/* En Alt Köşe Bilgileri */
 .minimal-footer {
   position: absolute;
-  left: clamp(2rem, 5vw, 5.25rem);
-  right: clamp(2rem, 5vw, 5.25rem);
+  left: clamp(2.25rem, 5.5vw, 6rem);
+  right: clamp(2.25rem, 5.5vw, 6rem);
   bottom: 2.2rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  font-family: var(--font-display);
+  font-size: 0.73rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -452,7 +554,7 @@ button {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(240, 242, 240, 0.25);
+  border: 1px solid rgba(242, 244, 243, 0.25);
   font-size: 0.68rem;
   color: var(--text);
 }
@@ -462,7 +564,7 @@ button {
 }
 
 /* ==========================================================================
-   Proje Detay Çekmecesi (Kartlara Tıklandığında Açılır)
+   Proje Detay Çekmecesi
    ========================================================================== */
 
 .project-modal {
@@ -490,11 +592,11 @@ button {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 640px;
+  max-width: 650px;
   padding: 2.25rem;
   background: #1E1D22;
-  border: 1px solid rgba(240, 242, 240, 0.18);
-  border-radius: 12px;
+  border: 1px solid rgba(242, 244, 243, 0.18);
+  border-radius: 14px;
 }
 
 .project-modal__top {
@@ -502,28 +604,29 @@ button {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.85rem;
-  font-size: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.84rem;
   color: var(--muted);
 }
 
 .project-modal__close {
-  padding: 0.35rem 0.75rem;
-  border: 1px solid rgba(240, 242, 240, 0.24);
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(242, 244, 243, 0.24);
   border-radius: 999px;
   color: var(--text);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
 }
 
 .project-modal__title {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
+  margin: 0 0 0.45rem;
+  font-size: 1.65rem;
   font-weight: 500;
   letter-spacing: -0.02em;
 }
 
 .project-modal__stack {
   margin: 0 0 1.25rem;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 
@@ -532,9 +635,35 @@ button {
   padding-left: 1.15rem;
   display: grid;
   gap: 0.65rem;
-  font-size: 0.96rem;
+  font-size: 0.94rem;
   line-height: 1.6;
   color: var(--text);
+}
+
+.project-modal__links {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.project-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(242, 244, 243, 0.3);
+  background: rgba(242, 244, 243, 0.08);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.project-modal__btn:hover {
+  background: rgba(242, 244, 243, 0.18);
+  border-color: rgba(242, 244, 243, 0.7);
 }
 
 /* ==========================================================================
@@ -550,8 +679,33 @@ button {
     padding-bottom: 4rem;
   }
 
+  .intro-block,
+  .philosophy-block,
+  .more-block {
+    max-width: 100%;
+    transform: none;
+  }
+
+  .map-pin {
+    transform: translate(0, -18vh);
+  }
+
   .wavy-work {
     width: 88vw;
+  }
+
+  .wavy-work__meta {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .contact-center {
+    width: 90vw;
+    padding: 1.5rem 0.75rem;
+  }
+
+  .contact-email {
+    font-size: clamp(1rem, 4.6vw, 1.6rem);
   }
 
   .minimal-footer {

@@ -3,8 +3,14 @@
    - Uses the proven 2-attribute WebGL pipeline (aPosition, aAlpha) guaranteed
      to render across all Windows ANGLE / Firefox / Chrome setups.
    - Zero Math.sin/Math.cos calls inside the particle loop (uses fast LUT).
-   - Zero rubbery velocity lag or Math.floor jumps while scrolling.
-   - Stage 0 & 1: Okan Yörük's real silhouette (extracted from his photo).
+   - Calibrated stage scales & offsets so particles NEVER collide with text:
+     * Stage 0: Centered Okan Yörük Bust (scaled cleanly between left/right titles)
+     * Stage 1: Bust shifted to right half (xShift = 0.88) clear of left intro text
+     * Stage 2: Sphere scaled to 0.75 so curved SVG orbit text hugs its outer rim
+     * Stage 3: Türkiye Map shifted slightly down-left so "Based in Türkiye" pin sits in clear space
+     * Stage 4 & 5: Diagonal DNA Ribbon passing above-left of philosophy statement
+     * Stage 6: Spiral Vortex shifted right (xShift = 0.34) clear of left statement
+     * Stage 7: Wide Particle Rectangle Frame (scaleX = 1.38, scaleY = 1.08) so full email fits inside
    ========================================================================== */
 
 (() => {
@@ -38,13 +44,20 @@
   }
 
   // Precomputed intermediate transition shapes (Helical Coils & Figure-8 Cloud)
-  // so transitions require ZERO trig calls during scrolling!
   const coilShape = new Float32Array(COUNT * 3);
   const fig8Shape = new Float32Array(COUNT * 3);
   const sliceSwirlX = new Float32Array(COUNT);
   const sliceCompressY = new Float32Array(COUNT);
 
-  function unpackBase64Shape(b64, outPos, outAlpha, xShift = 0, scale = 1.0) {
+  function unpackBase64Shape(
+    b64,
+    outPos,
+    outAlpha,
+    xShift = 0,
+    yShift = 0,
+    scaleX = 1.0,
+    scaleY = 1.0
+  ) {
     const bin = atob(b64);
     for (let i = 0; i < COUNT; i++) {
       const off = i * 5;
@@ -57,8 +70,8 @@
       const alpha = ia / 255.0;
 
       const i3 = i * 3;
-      outPos[i3] = nx * scale + xShift;
-      outPos[i3 + 1] = ny * scale;
+      outPos[i3] = nx * scaleX + xShift;
+      outPos[i3 + 1] = ny * scaleY + yShift;
       outPos[i3 + 2] = ((i % 17) / 17.0 - 0.5) * 0.12;
       outAlpha[i] = alpha;
     }
@@ -67,32 +80,61 @@
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
   // Stage 0: Centered Okan Yörük Bust Silhouette (Screenshot 4)
-  unpackBase64Shape(pack.bust, shapes[0], stageAlphas[0], 0.0, 1.0);
+  unpackBase64Shape(pack.bust, shapes[0], stageAlphas[0], 0.0, -0.03, 0.90, 0.92);
 
-  // Stage 1: Okan Yörük Bust Silhouette shifted Right (Screenshot 5)
+  // Stage 1: Okan Yörük Bust Silhouette shifted cleanly to the Right (Screenshot 5)
   unpackBase64Shape(
     pack.bust,
     shapes[1],
     stageAlphas[1],
-    isMobile ? 0.22 : 0.58,
-    1.03
+    isMobile ? 0.28 : 0.88,
+    -0.02,
+    0.94,
+    0.96
   );
 
-  // Stage 2: Centered Sphere (Screenshot 8)
-  unpackBase64Shape(pack.sphere, shapes[2], stageAlphas[2], 0.0, 1.0);
+  // Stage 2: Centered Sphere — scaled to 0.75 so radius in clipY is ~0.584 (58.4vh diameter)
+  // allowing the 64vh SVG curved text orbit to sit cleanly around the outside rim!
+  unpackBase64Shape(pack.sphere, shapes[2], stageAlphas[2], 0.0, 0.0, 0.75, 0.75);
 
-  // Stage 3: High-Resolution Topographic GIS Map of Türkiye (Screenshot 11)
-  unpackBase64Shape(pack.map, shapes[3], stageAlphas[3], 0.0, 1.0);
+  // Stage 3: High-Resolution Topographic Map of Türkiye (Screenshot 11)
+  // Shifted slightly down-left so "Based in Türkiye" sits in the clear upper-right space
+  unpackBase64Shape(
+    pack.map,
+    shapes[3],
+    stageAlphas[3],
+    isMobile ? 0.0 : -0.08,
+    -0.10,
+    0.86,
+    0.86
+  );
 
   // Stage 4 & 5: Diagonal Twisted DNA Ribbon (Screenshots 12-16)
-  unpackBase64Shape(pack.ribbon, shapes[4], stageAlphas[4], 0.0, 1.0);
-  unpackBase64Shape(pack.ribbon, shapes[5], stageAlphas[5], 0.0, 1.04);
+  unpackBase64Shape(pack.ribbon, shapes[4], stageAlphas[4], -0.06, 0.08, 1.0, 1.0);
+  unpackBase64Shape(pack.ribbon, shapes[5], stageAlphas[5], 0.0, 0.04, 1.04, 1.04);
 
-  // Stage 6: Spiral Galaxy Vortex (Screenshot 20)
-  unpackBase64Shape(pack.vortex, shapes[6], stageAlphas[6], 0.0, 1.0);
+  // Stage 6: Spiral Galaxy Vortex shifted right so left statement text stays in clear space (Screenshot 20)
+  unpackBase64Shape(
+    pack.vortex,
+    shapes[6],
+    stageAlphas[6],
+    isMobile ? 0.0 : 0.34,
+    0.0,
+    0.88,
+    0.88
+  );
 
-  // Stage 7: Sparkling Particle Rectangle Frame (Screenshot 22)
-  unpackBase64Shape(pack.rect, shapes[7], stageAlphas[7], 0.0, 1.0);
+  // Stage 7: Wide Sparkling Particle Rectangle Frame (Screenshot 22)
+  // Widened horizontally (scaleX = 1.38) so okanyoruk.tr@gmail.com fits inside with generous margins
+  unpackBase64Shape(
+    pack.rect,
+    shapes[7],
+    stageAlphas[7],
+    0.0,
+    0.02,
+    isMobile ? 1.05 : 1.38,
+    1.08
+  );
 
   // Precompute transition displacement tables once at startup
   for (let i = 0; i < COUNT; i++) {
@@ -126,7 +168,6 @@
      ------------------------------------------------------------------------ */
   const livePositions = new Float32Array(COUNT * 3);
   const liveAlphas = new Float32Array(COUNT);
-  // Cursor offset buffer (decays smoothly to 0 without affecting scroll morph!)
   const cursorOffsets = new Float32Array(COUNT * 2);
 
   livePositions.set(shapes[0]);
@@ -311,15 +352,13 @@
 
   /* ------------------------------------------------------------------------
      Fast, Silky-Smooth 60-120 FPS Animation Loop (< 0.4ms CPU time!)
-     - Direct position interpolation (zero rubbery velocity bounce on scroll)
-     - Lookup-table shimmer (zero per-particle Math.sin/cos)
      ------------------------------------------------------------------------ */
   const startTime = performance.now();
+  const vortexPivotX = isMobile ? 0.0 : 0.34;
 
   function animate(now) {
     const elapsed = (now - startTime) * 0.001;
 
-    // Smoothly scrub toward scroll target without spring overshoot
     smoothStageFloat += (targetStageFloat - smoothStageFloat) * 0.12;
     pointerWorld.active +=
       (pointerWorld.targetActive - pointerWorld.active) * 0.15;
@@ -343,8 +382,9 @@
     const isHelicalCoil = lowIdx === 5 && highIdx === 6;
     const isFigureEight = lowIdx === 6 && highIdx === 7;
 
-    const vortexSpin =
-      (lowIdx === 6 ? 1 - morph : highIdx === 6 ? morph : 0) * elapsed * 0.16;
+    const vortexWeight =
+      lowIdx === 6 ? 1 - morph : highIdx === 6 ? morph : 0;
+    const vortexSpin = vortexWeight * elapsed * 0.16;
     const hasVortexSpin = Math.abs(vortexSpin) > 0.001;
     const cosV = hasVortexSpin ? Math.cos(vortexSpin) : 1.0;
     const sinV = hasVortexSpin ? Math.sin(vortexSpin) : 0.0;
@@ -367,7 +407,7 @@
       let ty = shapeA[i3 + 1] + (shapeB[i3 + 1] - shapeA[i3 + 1]) * morph;
       let tz = shapeA[i3 + 2] + (shapeB[i3 + 2] - shapeA[i3 + 2]) * morph;
 
-      // 2. Smooth Horizontal Slice Wave (Screenshots 6, 7, 9, 10 - zero floor() jumps!)
+      // 2. Smooth Horizontal Slice Wave (Screenshots 6, 7, 9, 10)
       if (sliceMix > 0.005) {
         tx += sliceSwirlX[i] * sliceMix;
         ty += sliceCompressY[i] * sliceMix;
@@ -386,19 +426,19 @@
         ty += (fig8Shape[i3 + 1] - ty) * fig8Mix;
       }
 
-      // 5. Spiral Vortex rotation (Stage 6)
+      // 5. Spiral Vortex rotation around its shifted center (Stage 6)
       if (hasVortexSpin) {
-        const rx = tx * cosV - ty * sinV;
-        const ry = tx * sinV + ty * cosV;
-        tx = rx;
-        ty = ry;
+        const vx = tx - vortexPivotX * vortexWeight;
+        const vy = ty;
+        tx = vx * cosV - vy * sinV + vortexPivotX * vortexWeight;
+        ty = vx * sinV + vy * cosV;
       }
 
       // 6. Fast LUT organic breathing shimmer
       tx += SIN_LUT[(i + timeLutOffset) & 255] * 0.0035;
       ty += SIN_LUT[(i * 3 + timeLutOffset + 64) & 255] * 0.0035;
 
-      // 7. Localized cursor ripple (only affects cursorOffsets, never lags scroll morph!)
+      // 7. Localized cursor ripple
       let ox = cursorOffsets[i2] * 0.86;
       let oy = cursorOffsets[i2 + 1] * 0.86;
       if (pActive > 0.05) {
